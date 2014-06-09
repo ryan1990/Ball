@@ -83,7 +83,7 @@ public class World {
         if(ball.y > MAX_Y - Ball.HEIGHT) { gameOver = true; return; }
         
         // man movement
-        if (accelX>.25 || accelX<-.25) {
+        if (accelX>.1 || accelX<-.1) {
         	man.x += -accelX * 120 * deltaTime; //* matrix.vy / matrix.initvy;
         	//ball.x += -accelX * 150 * deltaTime;
         }
@@ -101,7 +101,7 @@ public class World {
         else if (man.x > MAX_X - man.WIDTH) man.x = MAX_X - man.WIDTH;
         
         if (man.y < MIN_Y) man.y = MIN_Y;
-        else if (man.y > MAX_Y/3 - man.HEIGHT) man.y = MAX_Y/3 - Man.HEIGHT;
+        else if (man.y > MAX_Y*2/3 - man.HEIGHT) man.y = MAX_Y*2/3 - Man.HEIGHT;
         
         // matrix movement
         matrix.y += matrix.vy*deltaTime;
@@ -142,7 +142,7 @@ public class World {
     
     private void collideManCoins() {
     	int count = 0;
-		for(int row=0; row<5; row++) {
+		for(int row=0; row<9; row++) {
 	    	for(int col=0; col<matrix.width; col++) {
 				Coin coin = matrix.array[row+matrix.getTopRow()][col];
 				Log.d("MyApp", "coin.y="+coin.y+", matrix.y="+matrix.y);
@@ -156,6 +156,8 @@ public class World {
 	    				else if (coin.type == 3) score += 3;
 	    				else if (coin.type == 0) {
 	    					score -= 10;
+	    					matrix.vy *= 1.2;
+	    					
 	    					if (score < 0) {
 	    						gameOver = true;
 	    					}

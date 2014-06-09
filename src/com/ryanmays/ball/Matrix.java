@@ -13,7 +13,7 @@ public class Matrix {
 	float y = 10;
 	public float initvy = 40;
     float vy = initvy;
-    float acceleration = 2;
+    float acceleration = .3f;
 	public Coin[][] array;
 	
 	public Matrix(int width, int heightFull, int windowHeight, int pixelsInBlock) {
@@ -32,12 +32,16 @@ public class Matrix {
 				array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 			}
 		}
+		Random rand = new Random();
 		for(int row=5; row<heightFull; row++) {
-			boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
+			//boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
+			int maxPerRow = row/30 + 1;
+			if (maxPerRow > width) maxPerRow = width;
+			int n = rand.nextInt(maxPerRow+1);
+			
 			// pick random column to place death coin on
-			Random rand = new Random();
-			int randomColumn = rand.nextInt(width);
-			array[row][randomColumn] = new Coin(0, randomColumn*pixelsInBlock, row*pixelsInBlock, true);
+			boolean[] rowArray = randomPlacementOnRow(n, width);
+			//array[row][randomColumn] = new Coin(0, randomColumn*pixelsInBlock, row*pixelsInBlock, true);
 			
 			for(int col=0; col<width; col++) {
 				// -1 : empty space
@@ -45,19 +49,23 @@ public class Matrix {
 				//  1 : bronze coin
 				//  2 : silver coin
 				//  3 : gold coin
-				if (col!=randomColumn) { // make sure this isn't the random column we placed death coin on
-					if (prob(100)) {
-						array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
-						//rowIsEmpty = false;
-					} else if (prob(30)) {
-						array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
-						//rowIsEmpty = false;
-					} else if (prob(10)) {
-						array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
-						//rowIsEmpty = false;
-					} else {
-						array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
-					}
+				
+				if (rowArray[col] == true) {
+					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
+					continue; // if we have placed death coin here, move on
+				}
+				
+				if (prob(50)) {
+					array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
+					//rowIsEmpty = false;
+				} else if (prob(15)) {
+					array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
+					//rowIsEmpty = false;
+				} else if (prob(5)) {
+					array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
+					//rowIsEmpty = false;
+				} else {
+					array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 				}
 				/*
 				if (col%2==0 && row%2==0) {
@@ -81,6 +89,42 @@ public class Matrix {
 			}
 		}
 		//array[0][0].visible = false;
+	}
+	
+	private boolean[] randomPlacementOnRow(int number, int width) {
+		if (number>width) {
+			throw new IllegalArgumentException("EXCEPTION: number>width");
+		}
+		boolean[] row = new boolean[width];
+		if (number==width) {
+			for(int i=0; i<width; i++) {
+				row[i] = true;
+			}
+			return row;
+		}
+		
+		Random rand = new Random();
+		
+		for(int i=0; i<width; i++) {
+			row[i] = false;
+		}
+		
+		
+		for(int i=0; i<number; i++) {
+			int n = rand.nextInt(width);
+			for(int j=0; j<width; j++) {
+				if (row[n] == false) {
+					row[n] = true;
+					break;
+				}
+				if (n<width-1) {
+					n++;
+				} else {
+					n = 0;
+				}
+			}
+		}
+		return row;
 	}
 	
 	private boolean prob(int range) {
