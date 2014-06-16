@@ -11,7 +11,7 @@ public class Matrix {
 	public int pixelsInBlock;
 	//float x = 160-WIDTH/2, y = 50;
 	float y = 10;
-	public float initvy = 40;
+	public float initvy = 30;
     float vy = initvy;
     float acceleration = .3f;
 	public Coin[][] array;
@@ -35,8 +35,8 @@ public class Matrix {
 		Random rand = new Random();
 		for(int row=5; row<heightFull; row++) {
 			//boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
-			int maxPerRow = row/30 + 1;
-			if (maxPerRow > width) maxPerRow = width;
+			int maxPerRow = row/50 + 2;
+			if (maxPerRow > 3) maxPerRow = 3;
 			int n = rand.nextInt(maxPerRow+1);
 			
 			// pick random column to place death coin on

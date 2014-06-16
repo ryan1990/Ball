@@ -88,6 +88,7 @@ public class World {
         	//ball.x += -accelX * 150 * deltaTime;
         }
         
+        /*
         if (accelY>.5+3) { // down
         	man.y += (accelY-3) * 120 * deltaTime; //* matrix.vy / matrix.initvy;
         	//ball.x += -accelY * 150 * deltaTime;
@@ -95,6 +96,7 @@ public class World {
         	man.y += (accelY-2) * 120 * deltaTime; //* matrix.vy / matrix.initvy;
         	//ball.x += -accelY * 150 * deltaTime;
         }
+        */
         
         // stop man at edges
         if (man.x < MIN_X) man.x = MIN_X;
