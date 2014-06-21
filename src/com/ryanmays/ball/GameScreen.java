@@ -90,6 +90,7 @@ public class GameScreen extends Screen {
             game.drawBitmap(gameOver, 160 - gameOver.getWidth() / 2, 240 - gameOver.getHeight() / 2);
         game.drawText(font, ""+world.score /*Integer.toString(world.points)*/, 24, 12, Color.GREEN, 12);        
         game.drawText(font, ""+world.maxScore, 220, 12, Color.CYAN, 12);
+        game.drawText(font, ""+world.matrix.getTopRow(), 120, 12, Color.YELLOW, 12);
     }
 
     public void pause() {

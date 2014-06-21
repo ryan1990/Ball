@@ -1,7 +1,10 @@
 package com.ryanmays.ball;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import android.graphics.Point;
 import android.util.Log;
 
 public class Matrix {	
@@ -11,10 +14,13 @@ public class Matrix {
 	public int pixelsInBlock;
 	//float x = 160-WIDTH/2, y = 50;
 	float y = 10;
-	public float initvy = 30;
-    float vy = initvy;
-    float acceleration = .3f;
+    float vy;
+    float acceleration = 0;//.3f;
 	public Coin[][] array;
+	int[][] levels;
+	int lastKnownLevel;
+	List<Point> leftConnected;
+	List<Point> rightConnected;
 	
 	public Matrix(int width, int heightFull, int windowHeight, int pixelsInBlock) {
 		this.width = width;
@@ -23,7 +29,32 @@ public class Matrix {
 		this.pixelsInBlock = pixelsInBlock;
 		
 		this.array = new Coin[heightFull][width];
+		this.levels = new int[30][2];
+		this.lastKnownLevel = -1;
+		
+		this.leftConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to left side
+		this.rightConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to right side
+		
+		buildLevels();
 		fill();
+	}
+	
+	// set up each level that will be stored in levels array
+	private void buildLevels() {
+		int velocity = 50;
+		int maxBlocks = 2;
+		for(int i=0; i<levels.length/3; i++) {
+			for(int j=0; j<3; j++) {
+				levels[i*3+j][0] = velocity;
+				levels[i*3+j][1] = maxBlocks;
+				
+				velocity += 20;
+				//maxBlocks -= 1;
+			}
+			
+			//velocity += 100;
+			maxBlocks = 2;
+		}
 	}
 	
 	private void fill() {
@@ -32,11 +63,18 @@ public class Matrix {
 				array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 			}
 		}
+		
 		Random rand = new Random();
+		int level = 0;
+		int maxPerRow = levels[level][1];
 		for(int row=5; row<heightFull; row++) {
 			//boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
-			int maxPerRow = row/50 + 2;
-			if (maxPerRow > 3) maxPerRow = 3;
+			if (row % 100 == 0) { // we have advanced 100 rows, time to move up a level
+				level++;
+				maxPerRow = levels[level][1];
+			}
+			
+			//if (maxPerRow > 3) maxPerRow = 3;
 			int n = rand.nextInt(maxPerRow+1);
 			
 			// pick random column to place death coin on
@@ -91,6 +129,56 @@ public class Matrix {
 		//array[0][0].visible = false;
 	}
 	
+	// adds a block if placing a block here will not complete a trail
+	// of adjacently and diagonally connected blocks to an edge
+	/*
+	private void addBlockIfAppropriate(int initRow, int initCol) {
+		
+		// base case
+		
+		// recursive case
+		// if exists, then explore
+		if (initRow >= 0 && initRow >= upperLimit)
+		if (initCol >= 0 && initCol < this.width) {
+			
+			if (array[initRow][initCol].type != -1) {
+				
+			}
+		}
+	}
+	*/
+	
+	private boolean foundLeftConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks) {
+		// base cases
+		if (row < 0 || row < upperLimit) return false;
+		if (col < 0 || col >= this.width) return false;
+		if (array[row][col].type == -1) return false;
+		
+		// CHECK CONTAINS METHOD!!!
+		if (exploredBlocks.contains(new Point(row, col))) return false;
+		if (col == 0 || leftConnected.contains(new Point(row, col))) {
+			exploredBlocks.add(new Point(row, col));
+			leftConnected.add(new Point(row, col));
+			return true;
+		} else { // explore all 8 surrounding spots
+			exploredBlocks.add(new Point(row, col));
+			boolean isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks)
+					|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks)
+					|| foundLeftConnection(row-1, col, upperLimit, exploredBlocks)
+					|| foundLeftConnection(row-1, col+1, upperLimit, exploredBlocks)
+					|| foundLeftConnection(row, col+1, upperLimit, exploredBlocks)
+					|| foundLeftConnection(row+1, col+1, upperLimit, exploredBlocks)
+					|| foundLeftConnection(row+1, col, upperLimit, exploredBlocks)
+					|| foundLeftConnection(row+1, col-1, upperLimit, exploredBlocks);
+			if (isConnected) {
+				leftConnected.add(new Point(row, col));
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
 	private boolean[] randomPlacementOnRow(int number, int width) {
 		if (number>width) {
 			throw new IllegalArgumentException("EXCEPTION: number>width");
@@ -133,6 +221,17 @@ public class Matrix {
 		return n == 0;
 	}
 	
+	public void updateMovement(float deltaTime) {
+		if (getLevel() > lastKnownLevel) {
+			vy = levels[getLevel()][0];
+			lastKnownLevel = getLevel();
+			Log.d("MyApp", "NEXT LEVEL!");
+		}
+	    y += vy*deltaTime;
+	    vy += acceleration*deltaTime;
+	}
+	
+	
 	public int windowHeightPixels() {
 		return pixelsInBlock * windowHeight;
 	}
@@ -143,5 +242,9 @@ public class Matrix {
 	
 	public int getOffset() {
 		return (int)y % pixelsInBlock;
+	}
+	
+	public int getLevel() {
+		return getTopRow() / 100;
 	}
 }
