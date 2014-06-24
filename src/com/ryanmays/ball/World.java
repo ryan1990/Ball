@@ -109,8 +109,6 @@ public class World {
         matrix.updateMovement(deltaTime);
         
         
-        Log.d("MyApp", "acc"+accelX+", matrix.y="+matrix.y);
-        
         collideManCoins();
         collideTopCoins();
     }
@@ -147,12 +145,9 @@ public class World {
 		for(int row=0; row<3; row++) {
 	    	for(int col=0; col<matrix.width; col++) {
 				Coin coin = matrix.array[row+matrix.getTopRow()][col];
-				Log.d("MyApp", "coin.y="+coin.y+", matrix.y="+matrix.y);
 				//Log.d("MyApp", "TOPROW:"+matrix.getTopRow());
 				if (coin.visible) {
 	    			if (collideRects(man.x, man.y, man.WIDTH, man.HEIGHT, coin.x, coin.y-matrix.y, coin.WIDTH, coin.HEIGHT)) {
-	    				Log.d("MyApp", "COLLIDE1"+" TOPROW="+matrix.getTopRow()+": coin.y="+coin.y+": matrix.y="+matrix.y);
-	    				Log.d("MyApp", "COLLIDE2 man.x="+man.x+", man.y="+man.y+", coin.x="+coin.x);
 	    				if (coin.type == 1) score++;
 	    				else if (coin.type == 2) score += 2;
 	    				else if (coin.type == 3) score += 3;
@@ -173,7 +168,6 @@ public class World {
 				count++;
 	    	}
 		}
-    	Log.d("MyApp", "COUNTTT:"+count);
     }
     
     private void flash() {

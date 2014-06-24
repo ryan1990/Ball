@@ -102,7 +102,7 @@ public class WorldRenderer {
         		}
         	}
         }
-    	Log.d("MyApp", "offset: "+world.matrix.getOffset());
+    	
     	//Log.d("MyApp", "count: "+count);
     	game.drawBitmap(topBarImage, 0, 0);
     	

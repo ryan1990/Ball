@@ -56,14 +56,38 @@ public class Matrix {
 			maxBlocks = 2;
 		}
 	}
+	///////////////////////////////////
 	
+	// game runs while matrix built!!!
+	
+	//////////////////////////////////
 	private void fill() {
-		for(int row=0; row<5; row++) {
+		Log.d("MyApp", "FILLED");
+		for(int row=0; row<heightFull/*5*/; row++) {
 			for(int col=0; col<width; col++) {
 				array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 			}
 		}
 		
+		if (isSpotLegal(6,0)) array[6][0].type = 0;// = new Coin(0, 0*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,1)) array[6][1].type = 0;// = new Coin(0, 1*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,2)) array[6][2].type = 0;// = new Coin(0, 2*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,3)) array[6][3].type = 0;// = new Coin(0, 3*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,4)) array[6][4].type = 0;// = new Coin(0, 4*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,5)) array[6][5].type = 0;// = new Coin(0, 5*pixelsInBlock, 6*pixelsInBlock, true);
+		
+		if (isSpotLegal(6,7)) array[6][7].type = 0;// = new Coin(0, 7*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,6)) array[6][6].type = 0;// = new Coin(0, 6*pixelsInBlock, 6*pixelsInBlock, true);
+		
+		/*
+		if (foundLeftConnection(6, 0, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 0");
+		if (foundLeftConnection(6, 1, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 1");
+		if (foundLeftConnection(6, 2, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 3");
+		*/
+		
+		
+		
+		if (true) return;
 		Random rand = new Random();
 		int level = 0;
 		int maxPerRow = levels[level][1];
@@ -87,43 +111,46 @@ public class Matrix {
 				//  1 : bronze coin
 				//  2 : silver coin
 				//  3 : gold coin
-				
-				if (rowArray[col] == true) {
-					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
-					continue; // if we have placed death coin here, move on
-				}
-				
-				if (prob(50)) {
-					array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
-					//rowIsEmpty = false;
-				} else if (prob(15)) {
-					array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
-					//rowIsEmpty = false;
-				} else if (prob(5)) {
-					array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
-					//rowIsEmpty = false;
+				if (row <= 10) {
+					if (rowArray[col] == true) {
+						array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
+						continue; // if we have placed death coin here, move on
+					}
+					
+					if (prob(50)) {
+						array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
+						//rowIsEmpty = false;
+					} else if (prob(15)) {
+						array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
+						//rowIsEmpty = false;
+					} else if (prob(5)) {
+						array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
+						//rowIsEmpty = false;
+					} else {
+						array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
+					}
+					/*
+					if (col%2==0 && row%2==0) {
+						array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock);
+					} else {
+						array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
+					}
+					if (col==0) {
+						array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock);
+					}
+					if (col==1) {
+						array[row][col] = new Coin(4, col*pixelsInBlock, row*pixelsInBlock);
+					}
+					if (col==2) {
+						array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
+					}
+					if (row==0) {
+						array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
+					}
+					*/
 				} else {
 					array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 				}
-				/*
-				if (col%2==0 && row%2==0) {
-					array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock);
-				} else {
-					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (col==0) {
-					array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (col==1) {
-					array[row][col] = new Coin(4, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (col==2) {
-					array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (row==0) {
-					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				*/
 			}
 		}
 		//array[0][0].visible = false;
@@ -147,20 +174,40 @@ public class Matrix {
 		}
 	}
 	*/
+	// return whether placing a block here would still allow player to be unblocked
+	private boolean isSpotLegal(int row, int col) {
+		int upperLimit = row-8;
+		if (upperLimit < 0) upperLimit = 0;
+		return !(foundLeftConnection(row, col, upperLimit, new ArrayList<Point>()) && foundRightConnection(row, col, upperLimit, new ArrayList<Point>()));
+	}
 	
 	private boolean foundLeftConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks) {
 		// base cases
-		if (row < 0 || row < upperLimit) return false;
-		if (col < 0 || col >= this.width) return false;
-		if (array[row][col].type == -1) return false;
-		
+		if (row < 0 || row < upperLimit) {
+			Log.d("MyApp", "a1");
+			return true;
+		} // changed???
+		if (col < 0 || col >= this.width) {
+			Log.d("MyApp", "a2");
+			return false;
+		}
+		if (array[row][col].type == -1) {
+			Log.d("MyApp", "a3 : row="+row+", col="+col);
+			return false;
+		}
+		Log.d("MyApp", "NOW");
 		// CHECK CONTAINS METHOD!!!
-		if (exploredBlocks.contains(new Point(row, col))) return false;
+		if (exploredBlocks.contains(new Point(row, col))) {
+			Log.d("MyApp", "a4");
+			return false;
+		}
 		if (col == 0 || leftConnected.contains(new Point(row, col))) {
 			exploredBlocks.add(new Point(row, col));
 			leftConnected.add(new Point(row, col));
+			Log.d("MyApp", "a5");
 			return true;
 		} else { // explore all 8 surrounding spots
+			Log.d("MyApp", "a6");
 			exploredBlocks.add(new Point(row, col));
 			boolean isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks)
 					|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks)
@@ -170,8 +217,45 @@ public class Matrix {
 					|| foundLeftConnection(row+1, col+1, upperLimit, exploredBlocks)
 					|| foundLeftConnection(row+1, col, upperLimit, exploredBlocks)
 					|| foundLeftConnection(row+1, col-1, upperLimit, exploredBlocks);
+			Log.d("MyApp", "isConnected Left = "+isConnected);
 			if (isConnected) {
 				leftConnected.add(new Point(row, col));
+				Log.d("MyApp", "a61");
+				return true;
+			} else {
+				Log.d("MyApp", "a62");
+				return false;
+			}
+		}
+	}
+	
+	private boolean foundRightConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks) {
+		Log.d("MyApp", "RIGHT");
+		// base cases
+		if (row < 0 || row < upperLimit) return true; // changed???
+		if (col < 0 || col >= this.width) return false;
+		if (array[row][col].type == -1) return false;
+		
+		// CHECK CONTAINS METHOD!!!
+		if (exploredBlocks.contains(new Point(row, col))) return false;
+		if (col == this.width-1 || rightConnected.contains(new Point(row, col))) {
+			exploredBlocks.add(new Point(row, col));
+			rightConnected.add(new Point(row, col));
+			return true;
+		} else { // explore all 8 surrounding spots
+			Log.d("MyApp", "YO");
+			exploredBlocks.add(new Point(row, col));
+			boolean isConnected = foundRightConnection(row, col-1, upperLimit, exploredBlocks)
+					|| foundRightConnection(row-1, col-1, upperLimit, exploredBlocks)
+					|| foundRightConnection(row-1, col, upperLimit, exploredBlocks)
+					|| foundRightConnection(row-1, col+1, upperLimit, exploredBlocks)
+					|| foundRightConnection(row, col+1, upperLimit, exploredBlocks)
+					|| foundRightConnection(row+1, col+1, upperLimit, exploredBlocks)
+					|| foundRightConnection(row+1, col, upperLimit, exploredBlocks)
+					|| foundRightConnection(row+1, col-1, upperLimit, exploredBlocks);
+			Log.d("MyApp", "isConnected Right = "+isConnected);
+			if (isConnected) {
+				rightConnected.add(new Point(row, col));
 				return true;
 			} else {
 				return false;
