@@ -69,15 +69,15 @@ public class Matrix {
 			}
 		}
 		
-		if (isSpotLegal(6,0)) array[6][0].type = 0;// = new Coin(0, 0*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,1)) array[6][1].type = 0;// = new Coin(0, 1*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,2)) array[6][2].type = 0;// = new Coin(0, 2*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,3)) array[6][3].type = 0;// = new Coin(0, 3*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,4)) array[6][4].type = 0;// = new Coin(0, 4*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,5)) array[6][5].type = 0;// = new Coin(0, 5*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,0)) { Log.d("MyApp", "60 legal"); array[6][0].type = 0;}// = new Coin(0, 0*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,1)) { Log.d("MyApp", "61 legal"); array[6][1].type = 0;}// = new Coin(0, 1*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,2)) { Log.d("MyApp", "62 legal"); array[6][2].type = 0;}// = new Coin(0, 2*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,3)) { Log.d("MyApp", "63 legal"); array[6][3].type = 0;}// = new Coin(0, 3*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,4)) { Log.d("MyApp", "64 legal"); array[6][4].type = 0;}// = new Coin(0, 4*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,5)) { Log.d("MyApp", "65 legal"); array[6][5].type = 0;}// = new Coin(0, 5*pixelsInBlock, 6*pixelsInBlock, true);
 		
-		if (isSpotLegal(6,7)) array[6][7].type = 0;// = new Coin(0, 7*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,6)) array[6][6].type = 0;// = new Coin(0, 6*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,7)) { Log.d("MyApp", "67 legal"); array[6][7].type = 0;}// = new Coin(0, 7*pixelsInBlock, 6*pixelsInBlock, true);
+		if (isSpotLegal(6,6)) { Log.d("MyApp", "66 legal"); array[6][6].type = 0;}// = new Coin(0, 6*pixelsInBlock, 6*pixelsInBlock, true);
 		
 		/*
 		if (foundLeftConnection(6, 0, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 0");
@@ -178,10 +178,10 @@ public class Matrix {
 	private boolean isSpotLegal(int row, int col) {
 		int upperLimit = row-8;
 		if (upperLimit < 0) upperLimit = 0;
-		return !(foundLeftConnection(row, col, upperLimit, new ArrayList<Point>()) && foundRightConnection(row, col, upperLimit, new ArrayList<Point>()));
+		return !(foundLeftConnection(row, col, upperLimit, new ArrayList<Point>(), true) && foundRightConnection(row, col, upperLimit, new ArrayList<Point>(), true));
 	}
 	
-	private boolean foundLeftConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks) {
+	private boolean foundLeftConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks, boolean isRoot) {
 		// base cases
 		if (row < 0 || row < upperLimit) {
 			Log.d("MyApp", "a1");
@@ -191,7 +191,7 @@ public class Matrix {
 			Log.d("MyApp", "a2");
 			return false;
 		}
-		if (array[row][col].type == -1) {
+		if (array[row][col].type == -1 && !isRoot) {
 			Log.d("MyApp", "a3 : row="+row+", col="+col);
 			return false;
 		}
@@ -209,15 +209,15 @@ public class Matrix {
 		} else { // explore all 8 surrounding spots
 			Log.d("MyApp", "a6");
 			exploredBlocks.add(new Point(row, col));
-			boolean isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks)
-					|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks)
-					|| foundLeftConnection(row-1, col, upperLimit, exploredBlocks)
-					|| foundLeftConnection(row-1, col+1, upperLimit, exploredBlocks)
-					|| foundLeftConnection(row, col+1, upperLimit, exploredBlocks)
-					|| foundLeftConnection(row+1, col+1, upperLimit, exploredBlocks)
-					|| foundLeftConnection(row+1, col, upperLimit, exploredBlocks)
-					|| foundLeftConnection(row+1, col-1, upperLimit, exploredBlocks);
-			Log.d("MyApp", "isConnected Left = "+isConnected);
+			boolean isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks, false)
+					|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks, false)
+					|| foundLeftConnection(row-1, col, upperLimit, exploredBlocks, false)
+					|| foundLeftConnection(row-1, col+1, upperLimit, exploredBlocks, false)
+					|| foundLeftConnection(row, col+1, upperLimit, exploredBlocks, false)
+					|| foundLeftConnection(row+1, col+1, upperLimit, exploredBlocks, false)
+					|| foundLeftConnection(row+1, col, upperLimit, exploredBlocks, false)
+					|| foundLeftConnection(row+1, col-1, upperLimit, exploredBlocks, false);
+			Log.d("MyApp", "isConnected Left = "+isConnected+", row="+row+", col="+col);
 			if (isConnected) {
 				leftConnected.add(new Point(row, col));
 				Log.d("MyApp", "a61");
@@ -229,12 +229,12 @@ public class Matrix {
 		}
 	}
 	
-	private boolean foundRightConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks) {
+	private boolean foundRightConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks, boolean isRoot) {
 		Log.d("MyApp", "RIGHT");
 		// base cases
 		if (row < 0 || row < upperLimit) return true; // changed???
 		if (col < 0 || col >= this.width) return false;
-		if (array[row][col].type == -1) return false;
+		if (array[row][col].type == -1 && !isRoot) return false;
 		
 		// CHECK CONTAINS METHOD!!!
 		if (exploredBlocks.contains(new Point(row, col))) return false;
@@ -245,15 +245,15 @@ public class Matrix {
 		} else { // explore all 8 surrounding spots
 			Log.d("MyApp", "YO");
 			exploredBlocks.add(new Point(row, col));
-			boolean isConnected = foundRightConnection(row, col-1, upperLimit, exploredBlocks)
-					|| foundRightConnection(row-1, col-1, upperLimit, exploredBlocks)
-					|| foundRightConnection(row-1, col, upperLimit, exploredBlocks)
-					|| foundRightConnection(row-1, col+1, upperLimit, exploredBlocks)
-					|| foundRightConnection(row, col+1, upperLimit, exploredBlocks)
-					|| foundRightConnection(row+1, col+1, upperLimit, exploredBlocks)
-					|| foundRightConnection(row+1, col, upperLimit, exploredBlocks)
-					|| foundRightConnection(row+1, col-1, upperLimit, exploredBlocks);
-			Log.d("MyApp", "isConnected Right = "+isConnected);
+			boolean isConnected = foundRightConnection(row, col-1, upperLimit, exploredBlocks, false)
+					|| foundRightConnection(row-1, col-1, upperLimit, exploredBlocks, false)
+					|| foundRightConnection(row-1, col, upperLimit, exploredBlocks, false)
+					|| foundRightConnection(row-1, col+1, upperLimit, exploredBlocks, false)
+					|| foundRightConnection(row, col+1, upperLimit, exploredBlocks, false)
+					|| foundRightConnection(row+1, col+1, upperLimit, exploredBlocks, false)
+					|| foundRightConnection(row+1, col, upperLimit, exploredBlocks, false)
+					|| foundRightConnection(row+1, col-1, upperLimit, exploredBlocks, false);
+			Log.d("MyApp", "isConnected Right = "+isConnected+", row="+row+", col="+col);
 			if (isConnected) {
 				rightConnected.add(new Point(row, col));
 				return true;
