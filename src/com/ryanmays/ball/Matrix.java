@@ -62,13 +62,12 @@ public class Matrix {
 	
 	//////////////////////////////////
 	private void fill() {
-		Log.d("MyApp", "FILLED");
-		for(int row=0; row<heightFull/*5*/; row++) {
+		for(int row=0; row<heightFull; row++) {
 			for(int col=0; col<width; col++) {
 				array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 			}
 		}
-		
+		/*
 		if (isSpotLegal(6,0)) { Log.d("MyApp", "60 legal"); array[6][0].type = 0;}// = new Coin(0, 0*pixelsInBlock, 6*pixelsInBlock, true);
 		if (isSpotLegal(6,1)) { Log.d("MyApp", "61 legal"); array[6][1].type = 0;}// = new Coin(0, 1*pixelsInBlock, 6*pixelsInBlock, true);
 		if (isSpotLegal(6,2)) { Log.d("MyApp", "62 legal"); array[6][2].type = 0;}// = new Coin(0, 2*pixelsInBlock, 6*pixelsInBlock, true);
@@ -78,6 +77,7 @@ public class Matrix {
 		
 		if (isSpotLegal(6,7)) { Log.d("MyApp", "67 legal"); array[6][7].type = 0;}// = new Coin(0, 7*pixelsInBlock, 6*pixelsInBlock, true);
 		if (isSpotLegal(6,6)) { Log.d("MyApp", "66 legal"); array[6][6].type = 0;}// = new Coin(0, 6*pixelsInBlock, 6*pixelsInBlock, true);
+		*/
 		
 		/*
 		if (foundLeftConnection(6, 0, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 0");
@@ -85,21 +85,19 @@ public class Matrix {
 		if (foundLeftConnection(6, 2, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 3");
 		*/
 		
-		
-		
-		if (true) return;
-		Random rand = new Random();
 		int level = 0;
 		int maxPerRow = levels[level][1];
-		for(int row=5; row<heightFull; row++) {
+		Random rand = new Random();
+		
+		for(int row=15; row<100/*heightFull*/; row++) {
 			//boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
 			if (row % 100 == 0) { // we have advanced 100 rows, time to move up a level
 				level++;
 				maxPerRow = levels[level][1];
 			}
-			
+			maxPerRow = 6;
 			//if (maxPerRow > 3) maxPerRow = 3;
-			int n = rand.nextInt(maxPerRow+1);
+			int n = 6;//rand.nextInt(maxPerRow+1);
 			
 			// pick random column to place death coin on
 			boolean[] rowArray = randomPlacementOnRow(n, width);
@@ -111,46 +109,47 @@ public class Matrix {
 				//  1 : bronze coin
 				//  2 : silver coin
 				//  3 : gold coin
-				if (row <= 10) {
-					if (rowArray[col] == true) {
+				
+				if (rowArray[col] == true) {
+					if (isSpotLegal(row, col)) {
 						array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
 						continue; // if we have placed death coin here, move on
-					}
-					
-					if (prob(50)) {
-						array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
-						//rowIsEmpty = false;
-					} else if (prob(15)) {
-						array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
-						//rowIsEmpty = false;
-					} else if (prob(5)) {
-						array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
-						//rowIsEmpty = false;
 					} else {
-						array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
+						array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, true);
 					}
-					/*
-					if (col%2==0 && row%2==0) {
-						array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock);
-					} else {
-						array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
-					}
-					if (col==0) {
-						array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock);
-					}
-					if (col==1) {
-						array[row][col] = new Coin(4, col*pixelsInBlock, row*pixelsInBlock);
-					}
-					if (col==2) {
-						array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
-					}
-					if (row==0) {
-						array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
-					}
-					*/
+				}
+				
+				if (prob(50)) {
+					array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
+					//rowIsEmpty = false;
+				} else if (prob(15)) {
+					array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
+					//rowIsEmpty = false;
+				} else if (prob(5)) {
+					array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
+					//rowIsEmpty = false;
 				} else {
 					array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 				}
+				/*
+				if (col%2==0 && row%2==0) {
+					array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock);
+				} else {
+					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
+				}
+				if (col==0) {
+					array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock);
+				}
+				if (col==1) {
+					array[row][col] = new Coin(4, col*pixelsInBlock, row*pixelsInBlock);
+				}
+				if (col==2) {
+					array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
+				}
+				if (row==0) {
+					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
+				}
+				*/
 			}
 		}
 		//array[0][0].visible = false;
@@ -184,30 +183,30 @@ public class Matrix {
 	private boolean foundLeftConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks, boolean isRoot) {
 		// base cases
 		if (row < 0 || row < upperLimit) {
-			Log.d("MyApp", "a1");
+			//Log.d("MyApp", "a1");
 			return true;
 		} // changed???
 		if (col < 0 || col >= this.width) {
-			Log.d("MyApp", "a2");
+			//Log.d("MyApp", "a2");
 			return false;
 		}
-		if (array[row][col].type == -1 && !isRoot) {
-			Log.d("MyApp", "a3 : row="+row+", col="+col);
+		if (array[row][col].type == -1 && !isRoot) { // type is NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			//Log.d("MyApp", "a3 : row="+row+", col="+col);
 			return false;
 		}
-		Log.d("MyApp", "NOW");
+		//Log.d("MyApp", "NOW");
 		// CHECK CONTAINS METHOD!!!
 		if (exploredBlocks.contains(new Point(row, col))) {
-			Log.d("MyApp", "a4");
+			//Log.d("MyApp", "a4");
 			return false;
 		}
 		if (col == 0 || leftConnected.contains(new Point(row, col))) {
 			exploredBlocks.add(new Point(row, col));
 			leftConnected.add(new Point(row, col));
-			Log.d("MyApp", "a5");
+			//Log.d("MyApp", "a5");
 			return true;
 		} else { // explore all 8 surrounding spots
-			Log.d("MyApp", "a6");
+			//Log.d("MyApp", "a6");
 			exploredBlocks.add(new Point(row, col));
 			boolean isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks, false)
 					|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks, false)
@@ -217,20 +216,20 @@ public class Matrix {
 					|| foundLeftConnection(row+1, col+1, upperLimit, exploredBlocks, false)
 					|| foundLeftConnection(row+1, col, upperLimit, exploredBlocks, false)
 					|| foundLeftConnection(row+1, col-1, upperLimit, exploredBlocks, false);
-			Log.d("MyApp", "isConnected Left = "+isConnected+", row="+row+", col="+col);
+			//Log.d("MyApp", "isConnected Left = "+isConnected+", row="+row+", col="+col);
 			if (isConnected) {
 				leftConnected.add(new Point(row, col));
-				Log.d("MyApp", "a61");
+				//Log.d("MyApp", "a61");
 				return true;
 			} else {
-				Log.d("MyApp", "a62");
+				//Log.d("MyApp", "a62");
 				return false;
 			}
 		}
 	}
 	
 	private boolean foundRightConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks, boolean isRoot) {
-		Log.d("MyApp", "RIGHT");
+		//Log.d("MyApp", "RIGHT");
 		// base cases
 		if (row < 0 || row < upperLimit) return true; // changed???
 		if (col < 0 || col >= this.width) return false;
@@ -243,7 +242,7 @@ public class Matrix {
 			rightConnected.add(new Point(row, col));
 			return true;
 		} else { // explore all 8 surrounding spots
-			Log.d("MyApp", "YO");
+			//Log.d("MyApp", "YO");
 			exploredBlocks.add(new Point(row, col));
 			boolean isConnected = foundRightConnection(row, col-1, upperLimit, exploredBlocks, false)
 					|| foundRightConnection(row-1, col-1, upperLimit, exploredBlocks, false)
@@ -253,7 +252,7 @@ public class Matrix {
 					|| foundRightConnection(row+1, col+1, upperLimit, exploredBlocks, false)
 					|| foundRightConnection(row+1, col, upperLimit, exploredBlocks, false)
 					|| foundRightConnection(row+1, col-1, upperLimit, exploredBlocks, false);
-			Log.d("MyApp", "isConnected Right = "+isConnected+", row="+row+", col="+col);
+			//Log.d("MyApp", "isConnected Right = "+isConnected+", row="+row+", col="+col);
 			if (isConnected) {
 				rightConnected.add(new Point(row, col));
 				return true;
