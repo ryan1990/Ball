@@ -51,11 +51,13 @@ public class World {
     	Log.d("MyApp","ball before");
     	this.ball = new Ball();
     	this.man = new Man();
-    	this.matrix = new Matrix(8, 3000, 11, 40);
+    	this.matrix = new Matrix(8, 40, 11, 40);
     	this.score = 0;
     	this.maxScore = 0;
     	this.beginFlashTime = 0;
     	Log.d("MyApp","ball created");
+    	
+    	this.matrix.buildNextLevel();
         //generateBlocks();
         //this.listener = listener;
     }
@@ -126,7 +128,7 @@ public class World {
     private void collideTopCoins() {
     	//for(int row=0; row<1; row++) {
     	for(int col=0; col<matrix.width; col++) {
-			Coin coin = matrix.array[matrix.getTopRow()][col];
+			Coin coin = matrix.levelArray[matrix.getTopRow()][col];
 			//Log.d("MyApp", "coin.y="+coin.y+", matrix.y="+matrix.y);
 			//Log.d("MyApp", "TOPROW:"+matrix.getTopRow());
 			if (coin.visible) {
@@ -144,7 +146,7 @@ public class World {
     	int count = 0;
 		for(int row=0; row<3; row++) {
 	    	for(int col=0; col<matrix.width; col++) {
-				Coin coin = matrix.array[row+matrix.getTopRow()][col];
+				Coin coin = matrix.levelArray[row+matrix.getTopRow()][col];
 				//Log.d("MyApp", "TOPROW:"+matrix.getTopRow());
 				if (coin.visible) {
 	    			if (collideRects(man.x, man.y, man.WIDTH, man.HEIGHT, coin.x, coin.y-matrix.y, coin.WIDTH, coin.HEIGHT)) {

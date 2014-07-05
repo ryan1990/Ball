@@ -79,7 +79,7 @@ public class WorldRenderer {
         		/////////////////////////
         		// handle loop
         		//////////////////////////
-        		Coin coin = world.matrix.array[row+world.matrix.getTopRow()][col];
+        		Coin coin = world.matrix.levelArray[row+world.matrix.getTopRow()][col];
         		//Log.d("MyApp", "ARRAY: "+world.matrix.array[row+world.matrix.getTopRow()][col]+", VAR: "+coin);
         		//Coin c2 = world.matrix.array[0][0];
         		//if (c2.visible == false) Log.d("MyApp", "FALSE!!!!!!!!!!!!!!!!!!!!!!");

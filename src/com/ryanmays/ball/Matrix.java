@@ -16,9 +16,10 @@ public class Matrix {
 	float y = 10;
     float vy;
     float acceleration = 0;//.3f;
-	public Coin[][] array;
+	public Coin[][] levelArray;
 	int[][] levels;
 	int lastKnownLevel;
+	int currentLevel;
 	List<Point> leftConnected;
 	List<Point> rightConnected;
 	
@@ -28,43 +29,47 @@ public class Matrix {
 		this.windowHeight = windowHeight;
 		this.pixelsInBlock = pixelsInBlock;
 		
-		this.array = new Coin[heightFull][width];
+		this.levelArray = new Coin[heightFull][width];
 		this.levels = new int[30][2];
 		this.lastKnownLevel = -1;
+		this.currentLevel = 0;
 		
 		this.leftConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to left side
 		this.rightConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to right side
 		
 		buildLevels();
-		fill();
 	}
 	
 	// set up each level that will be stored in levels array
 	private void buildLevels() {
-		int velocity = 50;
-		int maxBlocks = 2;
+		int velocity = 80;
+		int averageBlocks = 0;
 		for(int i=0; i<levels.length/3; i++) {
 			for(int j=0; j<3; j++) {
 				levels[i*3+j][0] = velocity;
-				levels[i*3+j][1] = maxBlocks;
+				levels[i*3+j][1] = averageBlocks;
 				
-				velocity += 20;
-				//maxBlocks -= 1;
+				velocity += 10;
+				averageBlocks = 7;
 			}
 			
 			//velocity += 100;
-			maxBlocks = 2;
+			//averageBlocks = 2;
 		}
 	}
+	
+	
 	///////////////////////////////////
 	
 	// game runs while matrix built!!!
 	
 	//////////////////////////////////
-	private void fill() {
+	
+	// adds and sets up the next level
+	public void buildNextLevel() {
 		for(int row=0; row<heightFull; row++) {
 			for(int col=0; col<width; col++) {
-				array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
+				levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 			}
 		}
 		/*
@@ -85,22 +90,19 @@ public class Matrix {
 		if (foundLeftConnection(6, 2, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 3");
 		*/
 		
-		int level = 0;
-		int maxPerRow = levels[level][1];
+		int averagePerRow = levels[currentLevel][1];
 		Random rand = new Random();
+		vy += 60;
 		
-		for(int row=15; row<100/*heightFull*/; row++) {
+		for(int row=5; row<heightFull; row++) {
 			//boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
-			if (row % 100 == 0) { // we have advanced 100 rows, time to move up a level
-				level++;
-				maxPerRow = levels[level][1];
-			}
-			maxPerRow = 6;
-			//if (maxPerRow > 3) maxPerRow = 3;
-			int n = 6;//rand.nextInt(maxPerRow+1);
 			
+			//if (maxPerRow > 3) maxPerRow = 3;
+			
+			int numberOnRow = rand.nextInt((averagePerRow*2)+1);
+			if (numberOnRow > 8) numberOnRow = 8;
 			// pick random column to place death coin on
-			boolean[] rowArray = randomPlacementOnRow(n, width);
+			boolean[] rowArray = randomPlacementOnRow(numberOnRow, width);
 			//array[row][randomColumn] = new Coin(0, randomColumn*pixelsInBlock, row*pixelsInBlock, true);
 			
 			for(int col=0; col<width; col++) {
@@ -112,47 +114,28 @@ public class Matrix {
 				
 				if (rowArray[col] == true) {
 					if (isSpotLegal(row, col)) {
-						array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
+						levelArray[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
 						continue; // if we have placed death coin here, move on
 					} else {
-						array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, true);
+						levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, true);
 					}
 				}
 				
 				if (prob(50)) {
-					array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
+					levelArray[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
 					//rowIsEmpty = false;
 				} else if (prob(15)) {
-					array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
+					levelArray[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
 					//rowIsEmpty = false;
 				} else if (prob(5)) {
-					array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
+					levelArray[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
 					//rowIsEmpty = false;
 				} else {
-					array[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
+					levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
 				}
-				/*
-				if (col%2==0 && row%2==0) {
-					array[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock);
-				} else {
-					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (col==0) {
-					array[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (col==1) {
-					array[row][col] = new Coin(4, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (col==2) {
-					array[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				if (row==0) {
-					array[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
-				}
-				*/
 			}
 		}
-		//array[0][0].visible = false;
+		currentLevel++;
 	}
 	
 	// adds a block if placing a block here will not complete a trail
@@ -182,6 +165,7 @@ public class Matrix {
 	
 	private boolean foundLeftConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks, boolean isRoot) {
 		// base cases
+		if (row >= levelArray.length) return false;
 		if (row < 0 || row < upperLimit) {
 			//Log.d("MyApp", "a1");
 			return true;
@@ -190,7 +174,7 @@ public class Matrix {
 			//Log.d("MyApp", "a2");
 			return false;
 		}
-		if (array[row][col].type == -1 && !isRoot) { // type is NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		if (levelArray[row][col].type == -1 && !isRoot) { // type is NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//Log.d("MyApp", "a3 : row="+row+", col="+col);
 			return false;
 		}
@@ -205,18 +189,24 @@ public class Matrix {
 			leftConnected.add(new Point(row, col));
 			//Log.d("MyApp", "a5");
 			return true;
-		} else { // explore all 8 surrounding spots
-			//Log.d("MyApp", "a6");
+		} else {
 			exploredBlocks.add(new Point(row, col));
-			boolean isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks, false)
-					|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks, false)
-					|| foundLeftConnection(row-1, col, upperLimit, exploredBlocks, false)
-					|| foundLeftConnection(row-1, col+1, upperLimit, exploredBlocks, false)
-					|| foundLeftConnection(row, col+1, upperLimit, exploredBlocks, false)
-					|| foundLeftConnection(row+1, col+1, upperLimit, exploredBlocks, false)
-					|| foundLeftConnection(row+1, col, upperLimit, exploredBlocks, false)
-					|| foundLeftConnection(row+1, col-1, upperLimit, exploredBlocks, false);
-			//Log.d("MyApp", "isConnected Left = "+isConnected+", row="+row+", col="+col);
+			boolean isConnected;
+			if (isRoot) { // only explore up and left, since these are the only place the blocks could be
+				isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row-1, col, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row-1, col+1, upperLimit, exploredBlocks, false);
+			} else { // explore all 8 surrounding spots
+				isConnected = foundLeftConnection(row, col-1, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row-1, col-1, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row-1, col, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row-1, col+1, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row, col+1, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row+1, col+1, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row+1, col, upperLimit, exploredBlocks, false)
+						|| foundLeftConnection(row+1, col-1, upperLimit, exploredBlocks, false);
+			}
 			if (isConnected) {
 				leftConnected.add(new Point(row, col));
 				//Log.d("MyApp", "a61");
@@ -231,9 +221,10 @@ public class Matrix {
 	private boolean foundRightConnection(int row, int col, int upperLimit, ArrayList<Point> exploredBlocks, boolean isRoot) {
 		//Log.d("MyApp", "RIGHT");
 		// base cases
+		if (row >= levelArray.length) return false;
 		if (row < 0 || row < upperLimit) return true; // changed???
 		if (col < 0 || col >= this.width) return false;
-		if (array[row][col].type == -1 && !isRoot) return false;
+		if (levelArray[row][col].type == -1 && !isRoot) return false;
 		
 		// CHECK CONTAINS METHOD!!!
 		if (exploredBlocks.contains(new Point(row, col))) return false;
@@ -241,18 +232,25 @@ public class Matrix {
 			exploredBlocks.add(new Point(row, col));
 			rightConnected.add(new Point(row, col));
 			return true;
-		} else { // explore all 8 surrounding spots
-			//Log.d("MyApp", "YO");
-			exploredBlocks.add(new Point(row, col));
-			boolean isConnected = foundRightConnection(row, col-1, upperLimit, exploredBlocks, false)
-					|| foundRightConnection(row-1, col-1, upperLimit, exploredBlocks, false)
-					|| foundRightConnection(row-1, col, upperLimit, exploredBlocks, false)
-					|| foundRightConnection(row-1, col+1, upperLimit, exploredBlocks, false)
-					|| foundRightConnection(row, col+1, upperLimit, exploredBlocks, false)
-					|| foundRightConnection(row+1, col+1, upperLimit, exploredBlocks, false)
-					|| foundRightConnection(row+1, col, upperLimit, exploredBlocks, false)
-					|| foundRightConnection(row+1, col-1, upperLimit, exploredBlocks, false);
-			//Log.d("MyApp", "isConnected Right = "+isConnected+", row="+row+", col="+col);
+		} else {
+			boolean isConnected;
+			if (isRoot) { // only explore up and left, since these are the only place the blocks could be
+				exploredBlocks.add(new Point(row, col));
+				isConnected = foundRightConnection(row, col-1, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row-1, col-1, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row-1, col, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row-1, col+1, upperLimit, exploredBlocks, false);
+			} else { // explore all 8 surrounding spots
+				exploredBlocks.add(new Point(row, col));
+				isConnected = foundRightConnection(row, col-1, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row-1, col-1, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row-1, col, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row-1, col+1, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row, col+1, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row+1, col+1, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row+1, col, upperLimit, exploredBlocks, false)
+						|| foundRightConnection(row+1, col-1, upperLimit, exploredBlocks, false);
+			}
 			if (isConnected) {
 				rightConnected.add(new Point(row, col));
 				return true;
@@ -312,6 +310,13 @@ public class Matrix {
 		}
 	    y += vy*deltaTime;
 	    vy += acceleration*deltaTime;
+	    
+	    // see if we hit bottom of level
+	    if (getTopRow() >= heightFull-windowHeight-1) {
+	    	Log.d("MyApp", "ENDED");
+	    	y = 0;
+	    	buildNextLevel();
+	    }
 	}
 	
 	
