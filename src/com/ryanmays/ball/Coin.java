@@ -24,9 +24,9 @@ public class Coin {
     	int blue = 50;
     	
     	if (speed > 0) {
-    		green += getSpeedAdjustedForColor(speed)*12;
+    		green += getSpeedAdjustedForColor(speed)*15;
     	} else if (speed < 0) {
-    		red += getSpeedAdjustedForColor(-1*speed)*12;
+    		red += getSpeedAdjustedForColor(-1*speed)*15;
     	}
     	
     	return new Color().rgb(red, green, blue);

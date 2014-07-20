@@ -76,11 +76,11 @@ public class Matrix {
 		levels[10][0] = 160;
 		levels[10][1] = 3;
 		// 11
-		levels[1][0] = 280;
-		levels[1][1] = 1.5f;
+		levels[11][0] = 280;
+		levels[11][1] = 1.5f;
 		// 12
-		levels[11][0] = 170;
-		levels[11][1] = 3;
+		levels[12][0] = 170;
+		levels[12][1] = 3;
 		/*
 		levels[0][0] = 90;
 		levels[0][1] = 3;
@@ -191,11 +191,12 @@ public class Matrix {
 				//if (col == 7) levelArray[row][col].speed = -10;
 			}
 		}
-		createSpeedRectangle(3,3,2,2,.5f,.5f,-3);
-		createSpeedRectangle(5,10,2,3,1,1,4);
-		createSpeedRectangle(4,20,2,3,1,1,-10);
-		createSpeedRectangle(5,30,2,3,1,1,10
-				);
+		//createSpeedRectangle(0,this.heightFull/2,this.width,10,.15f,.15f,3);
+		createSpeedRectangle(0,20,this.width,1,1,1,8); // less death blocks in green?
+		createSpeedRectangle(0,40,this.width,1,1,1,-8);
+		//createSpeedRectangle(5,10,2,3,1,1,4);
+		//createSpeedRectangle(4,20,2,3,1,1,-10);
+		//createSpeedRectangle(5,30,2,3,1,1,10);
 	}
 	
 	// return whether placing a block here would still allow player to be unblocked

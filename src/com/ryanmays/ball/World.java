@@ -147,9 +147,12 @@ public class World {
 				//Log.d("MyApp", "TOPROW:"+matrix.getTopRow());
     			if (collideRects(man.x, man.y, man.WIDTH, man.HEIGHT, coin.x, coin.y-matrix.y, coin.WIDTH, coin.HEIGHT)) {
     				// handle acceleration from blocks with a particular speed
-    				if (matrix.vy != 0 && !matrix.levelArray[row][col].hit) {	
+    				if (coin.getSpeed() != 0 && !coin.hit) {	
     					matrix.vy = adjustedVY(matrix.vy, coin.getSpeed());
-    					matrix.levelArray[row][col].hit = true;
+    					// set all coins in row to hit so we only change vy once per row
+    					for(int i=0; i<matrix.levelArray[row+matrix.getTopRow()].length; i++) {
+    						matrix.levelArray[row+matrix.getTopRow()][i].hit = true;
+    					}
     				}
     				
     				// handle collisions with special blocks
@@ -158,12 +161,11 @@ public class World {
     				else if (coin.type == 3) score += 3;
     				else if (coin.type == 0) {
     					score -= 10;
-    					//matrix.vy *= 1.2;
+    					flash();
     					
     					if (score < 0 || score < maxScore - 40) {
     						gameOver = true;
     					}
-    					flash();
     				}
     				
     				if (score > maxScore) maxScore = score;
@@ -175,15 +177,18 @@ public class World {
     }
     
     private float adjustedVY(float vy, int coinSpeed) {
-    	float newVY = vy + vy*.5f*coinSpeed;
+    	// weight is used to make vy change more proportionally consistent between positive and negative
+    	float weight;
+    	if (coinSpeed > 0) weight = vy;
+    	else weight = vy + vy*.01f*coinSpeed; // we add because coinSpeed is negative. weight will be less.
+    	
+    	float newVY = vy + weight*.01f*coinSpeed;
     	
     	float levelVY = matrix.levels[matrix.currentLevel][0];
-    	float minLevelVY = .5f * levelVY;
-    	float maxLevelVY = 1.5f * levelVY;
+    	float minLevelVY = 30;
     	
     	if (newVY < minLevelVY) newVY = minLevelVY;
-    	else if (newVY > maxLevelVY) newVY = maxLevelVY;
-    	
+    	//else if (newVY > maxLevelVY) newVY = maxLevelVY;
     	return newVY;
     }
     
