@@ -51,8 +51,8 @@ public class World {
     	Log.d("MyApp","ball before");
     	this.ball = new Ball();
     	this.man = new Man();
-    	this.matrix = new Matrix(8, 40, 11, 40);
-    	this.score = 0;
+    	this.matrix = new Matrix(8, 60, 11, 40);
+    	this.score = 30;
     	this.maxScore = 0;
     	this.beginFlashTime = 0;
     	Log.d("MyApp","ball created");
@@ -157,14 +157,15 @@ public class World {
 	    					score -= 10;
 	    					//matrix.vy *= 1.2;
 	    					
-	    					if (score < 0) {
+	    					if (score < 0 || score < maxScore - 40) {
 	    						gameOver = true;
 	    					}
 	    					flash();
 	    				}
 	    				
 	    				if (score > maxScore) maxScore = score;
-	    				coin.visible = false;
+	    				coin.type = -1;
+	    				//coin.visible = false;
 	    			}
 				}
 				count++;

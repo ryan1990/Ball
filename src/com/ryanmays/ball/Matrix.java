@@ -17,9 +17,9 @@ public class Matrix {
     float vy;
     float acceleration = 0;//.3f;
 	public Coin[][] levelArray;
-	int[][] levels;
+	float[][] levels;
 	int lastKnownLevel;
-	int currentLevel;
+	public int currentLevel;
 	List<Point> leftConnected;
 	List<Point> rightConnected;
 	
@@ -30,7 +30,7 @@ public class Matrix {
 		this.pixelsInBlock = pixelsInBlock;
 		
 		this.levelArray = new Coin[heightFull][width];
-		this.levels = new int[30][2];
+		this.levels = new float[30][2];
 		this.lastKnownLevel = -1;
 		this.currentLevel = 0;
 		
@@ -42,6 +42,60 @@ public class Matrix {
 	
 	// set up each level that will be stored in levels array
 	private void buildLevels() {
+		// 0
+		levels[0][0] = 70;
+		levels[0][1] = 1;
+		// 1
+		levels[0][0] = 110;
+		levels[0][1] = 1;
+		// 2
+		levels[0][0] = 60;
+		levels[0][1] = 2.5f;
+		// 3
+		levels[0][0] = 160;
+		levels[0][1] = 1.5f;
+		// 4
+		levels[0][0] = 70;
+		levels[0][1] = 3;
+		// 5
+		levels[0][0] = 200;
+		levels[0][1] = 1.5f;
+		// 6
+		levels[0][0] = 110;
+		levels[0][1] = 3.5f;
+		// 7
+		levels[0][0] = 240;
+		levels[0][1] = 1.5f;
+		// 8
+		levels[8][0] = 130;
+		levels[8][1] = 3.5f;
+		// 9
+		levels[0][0] = 260;
+		levels[0][1] = 1.5f;
+		// 10
+		levels[0][0] = 160;
+		levels[0][1] = 3;
+		// 11
+		levels[1][0] = 280;
+		levels[1][1] = 1.5f;
+		// 12
+		levels[11][0] = 170;
+		levels[11][1] = 3;
+		/*
+		levels[0][0] = 90;
+		levels[0][1] = 3;
+		
+		levels[0][0] = 110;
+		levels[0][1] = 4; //good
+		
+		levels[4][0] = 150;
+		levels[4][1] = 1.5f;
+		/*
+		levels[5][0] = 50;
+		levels[5][1] = 3;
+		*/
+		
+		/*
 		int velocity = 80;
 		int averageBlocks = 0;
 		for(int i=0; i<levels.length/3; i++) {
@@ -56,6 +110,7 @@ public class Matrix {
 			//velocity += 100;
 			//averageBlocks = 2;
 		}
+		*/
 	}
 	
 	
@@ -69,7 +124,7 @@ public class Matrix {
 	public void buildNextLevel() {
 		for(int row=0; row<heightFull; row++) {
 			for(int col=0; col<width; col++) {
-				levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
+				levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, true);
 			}
 		}
 		/*
@@ -89,17 +144,16 @@ public class Matrix {
 		if (foundLeftConnection(6, 1, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 1");
 		if (foundLeftConnection(6, 2, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 3");
 		*/
-		
-		int averagePerRow = levels[currentLevel][1];
+		vy = levels[currentLevel][0];
+		float averagePerRow = levels[currentLevel][1];
 		Random rand = new Random();
-		vy += 60;
 		
-		for(int row=5; row<heightFull; row++) {
+		for(int row=5; row<heightFull-windowHeight; row++) {
 			//boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
 			
 			//if (maxPerRow > 3) maxPerRow = 3;
 			
-			int numberOnRow = rand.nextInt((averagePerRow*2)+1);
+			int numberOnRow = rand.nextInt((int) ((averagePerRow*2)+1));
 			if (numberOnRow > 8) numberOnRow = 8;
 			// pick random column to place death coin on
 			boolean[] rowArray = randomPlacementOnRow(numberOnRow, width);
@@ -112,27 +166,27 @@ public class Matrix {
 				//  2 : silver coin
 				//  3 : gold coin
 				
-				if (rowArray[col] == true) {
+				if (rowArray[col]) {
 					if (isSpotLegal(row, col)) {
 						levelArray[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
-						continue; // if we have placed death coin here, move on
+					}
+				} else { // !rowArray[col]
+					if (prob(50)) {
+						levelArray[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
+						//rowIsEmpty = false;
+					} else if (prob(15)) {
+						levelArray[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
+						//rowIsEmpty = false;
+					} else if (prob(5)) {
+						levelArray[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
+						//rowIsEmpty = false;
 					} else {
 						levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, true);
 					}
 				}
-				
-				if (prob(50)) {
-					levelArray[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
-					//rowIsEmpty = false;
-				} else if (prob(15)) {
-					levelArray[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
-					//rowIsEmpty = false;
-				} else if (prob(5)) {
-					levelArray[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
-					//rowIsEmpty = false;
-				} else {
-					levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, false);
-				}
+				levelArray[row][col].speed = col;
+				if (col == 6) levelArray[row][col].speed = 9;
+				if (col == 7) levelArray[row][col].speed = 10;
 			}
 		}
 		currentLevel++;
@@ -174,7 +228,7 @@ public class Matrix {
 			//Log.d("MyApp", "a2");
 			return false;
 		}
-		if (levelArray[row][col].type == -1 && !isRoot) { // type is NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		if (levelArray[row][col].type != 0 && !isRoot) { // type is NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//Log.d("MyApp", "a3 : row="+row+", col="+col);
 			return false;
 		}
@@ -224,7 +278,7 @@ public class Matrix {
 		if (row >= levelArray.length) return false;
 		if (row < 0 || row < upperLimit) return true; // changed???
 		if (col < 0 || col >= this.width) return false;
-		if (levelArray[row][col].type == -1 && !isRoot) return false;
+		if (levelArray[row][col].type != 0 && !isRoot) return false;
 		
 		// CHECK CONTAINS METHOD!!!
 		if (exploredBlocks.contains(new Point(row, col))) return false;

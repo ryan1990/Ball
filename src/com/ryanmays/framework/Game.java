@@ -484,6 +484,20 @@ public abstract class Game extends Activity implements Runnable, OnKeyListener, 
     }
     
     Paint paint = new Paint();
+    
+    /**
+     * I added this.
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param col
+     */
+    public void drawRectangle(int x, int y, int width, int height, int col) {
+	    paint.setColor(col);
+	    if(canvas != null) canvas.drawRect(new Rect(x,y,x+width,y+height), paint);
+    }
+    
     /**
      * Draws the given text, using the given {@link Typeface}, color and size. The x- and y-coordinate
      * specify the upper left corner in the framebuffer of the left most character in the string.

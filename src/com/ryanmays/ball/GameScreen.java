@@ -82,15 +82,16 @@ public class GameScreen extends Screen {
         }        
         if(state == State.Running) world.update(deltaTime, game.getAccelerometer()[0], game.getAccelerometer()[1]);
         
-        game.drawBitmap(background, 0, 0);           
+        //game.drawBitmap(background, 0, 0);
+        game.drawRectangle(0, 0, (int)world.MAX_X, (int)world.MAX_Y, new Color().rgb(10, 0, 50));
         renderer.render();
         if(state == State.Paused)
             game.drawBitmap(resume, 160 - resume.getWidth() / 2, 240 - resume.getHeight() / 2);
         if(state == State.GameOver)
             game.drawBitmap(gameOver, 160 - gameOver.getWidth() / 2, 240 - gameOver.getHeight() / 2);
         game.drawText(font, ""+world.score /*Integer.toString(world.points)*/, 24, 12, Color.GREEN, 12);        
-        game.drawText(font, ""+world.maxScore, 220, 12, Color.CYAN, 12);
-        game.drawText(font, ""+world.matrix.getTopRow(), 120, 12, Color.YELLOW, 12);
+        game.drawText(font, ""+world.matrix.currentLevel, 220, 12, Color.CYAN, 12);
+        game.drawText(font, ""+world.matrix.getLevel(), 120, 12, Color.YELLOW, 12);
     }
 
     public void pause() {
