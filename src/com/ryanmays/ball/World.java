@@ -131,12 +131,9 @@ public class World {
 			Coin coin = matrix.levelArray[matrix.getTopRow()][col];
 			//Log.d("MyApp", "coin.y="+coin.y+", matrix.y="+matrix.y);
 			//Log.d("MyApp", "TOPROW:"+matrix.getTopRow());
-			if (coin.visible) {
-    			if (coin.y - matrix.y <= 0) {
-    				Log.d("MyApp", "COLLIDE"+" TOPROW="+matrix.getTopRow());
-    				//score = 0;
-    				coin.visible = false;
-    			}
+			if (coin.y - matrix.y <= 0) {
+				Log.d("MyApp", "COLLIDE"+" TOPROW="+matrix.getTopRow());
+				//score = 0;
 			}
     	}
 		//}
@@ -148,29 +145,46 @@ public class World {
 	    	for(int col=0; col<matrix.width; col++) {
 				Coin coin = matrix.levelArray[row+matrix.getTopRow()][col];
 				//Log.d("MyApp", "TOPROW:"+matrix.getTopRow());
-				if (coin.visible) {
-	    			if (collideRects(man.x, man.y, man.WIDTH, man.HEIGHT, coin.x, coin.y-matrix.y, coin.WIDTH, coin.HEIGHT)) {
-	    				if (coin.type == 1) score++;
-	    				else if (coin.type == 2) score += 2;
-	    				else if (coin.type == 3) score += 3;
-	    				else if (coin.type == 0) {
-	    					score -= 10;
-	    					//matrix.vy *= 1.2;
-	    					
-	    					if (score < 0 || score < maxScore - 40) {
-	    						gameOver = true;
-	    					}
-	    					flash();
-	    				}
-	    				
-	    				if (score > maxScore) maxScore = score;
-	    				coin.type = -1;
-	    				//coin.visible = false;
-	    			}
-				}
+    			if (collideRects(man.x, man.y, man.WIDTH, man.HEIGHT, coin.x, coin.y-matrix.y, coin.WIDTH, coin.HEIGHT)) {
+    				// handle acceleration from blocks with a particular speed
+    				if (matrix.vy != 0 && !matrix.levelArray[row][col].hit) {	
+    					matrix.vy = adjustedVY(matrix.vy, coin.getSpeed());
+    					matrix.levelArray[row][col].hit = true;
+    				}
+    				
+    				// handle collisions with special blocks
+    				if (coin.type == 1) score++;
+    				else if (coin.type == 2) score += 2;
+    				else if (coin.type == 3) score += 3;
+    				else if (coin.type == 0) {
+    					score -= 10;
+    					//matrix.vy *= 1.2;
+    					
+    					if (score < 0 || score < maxScore - 40) {
+    						gameOver = true;
+    					}
+    					flash();
+    				}
+    				
+    				if (score > maxScore) maxScore = score;
+    				coin.type = -1;
+    			}
 				count++;
 	    	}
 		}
+    }
+    
+    private float adjustedVY(float vy, int coinSpeed) {
+    	float newVY = vy + vy*.5f*coinSpeed;
+    	
+    	float levelVY = matrix.levels[matrix.currentLevel][0];
+    	float minLevelVY = .5f * levelVY;
+    	float maxLevelVY = 1.5f * levelVY;
+    	
+    	if (newVY < minLevelVY) newVY = minLevelVY;
+    	else if (newVY > maxLevelVY) newVY = maxLevelVY;
+    	
+    	return newVY;
     }
     
     private void flash() {

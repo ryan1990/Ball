@@ -32,7 +32,7 @@ public class Matrix {
 		this.levelArray = new Coin[heightFull][width];
 		this.levels = new float[30][2];
 		this.lastKnownLevel = -1;
-		this.currentLevel = 0;
+		this.currentLevel = -1;
 		
 		this.leftConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to left side
 		this.rightConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to right side
@@ -46,35 +46,35 @@ public class Matrix {
 		levels[0][0] = 70;
 		levels[0][1] = 1;
 		// 1
-		levels[0][0] = 110;
-		levels[0][1] = 1;
+		levels[1][0] = 110;
+		levels[1][1] = 1;
 		// 2
-		levels[0][0] = 60;
-		levels[0][1] = 2.5f;
+		levels[2][0] = 60;
+		levels[2][1] = 2.5f;
 		// 3
-		levels[0][0] = 160;
-		levels[0][1] = 1.5f;
+		levels[3][0] = 160;
+		levels[3][1] = 1.5f;
 		// 4
-		levels[0][0] = 70;
-		levels[0][1] = 3;
+		levels[4][0] = 70;
+		levels[4][1] = 3;
 		// 5
-		levels[0][0] = 200;
-		levels[0][1] = 1.5f;
+		levels[5][0] = 200;
+		levels[5][1] = 1.5f;
 		// 6
-		levels[0][0] = 110;
-		levels[0][1] = 3.5f;
+		levels[6][0] = 110;
+		levels[6][1] = 3.5f;
 		// 7
-		levels[0][0] = 240;
-		levels[0][1] = 1.5f;
+		levels[7][0] = 240;
+		levels[7][1] = 1.5f;
 		// 8
 		levels[8][0] = 130;
 		levels[8][1] = 3.5f;
 		// 9
-		levels[0][0] = 260;
-		levels[0][1] = 1.5f;
+		levels[9][0] = 260;
+		levels[9][1] = 1.5f;
 		// 10
-		levels[0][0] = 160;
-		levels[0][1] = 3;
+		levels[10][0] = 160;
+		levels[10][1] = 3;
 		// 11
 		levels[1][0] = 280;
 		levels[1][1] = 1.5f;
@@ -122,9 +122,11 @@ public class Matrix {
 	
 	// adds and sets up the next level
 	public void buildNextLevel() {
+		currentLevel++;
+		
 		for(int row=0; row<heightFull; row++) {
 			for(int col=0; col<width; col++) {
-				levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, true);
+				levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock);
 			}
 		}
 		/*
@@ -168,48 +170,34 @@ public class Matrix {
 				
 				if (rowArray[col]) {
 					if (isSpotLegal(row, col)) {
-						levelArray[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock, true);
+						levelArray[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
 					}
 				} else { // !rowArray[col]
 					if (prob(50)) {
-						levelArray[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock, true);
+						levelArray[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
 						//rowIsEmpty = false;
 					} else if (prob(15)) {
-						levelArray[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock, true);
+						levelArray[row][col] = new Coin(2, col*pixelsInBlock, row*pixelsInBlock);
 						//rowIsEmpty = false;
 					} else if (prob(5)) {
-						levelArray[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock, true);
+						levelArray[row][col] = new Coin(1, col*pixelsInBlock, row*pixelsInBlock);
 						//rowIsEmpty = false;
 					} else {
-						levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock, true);
+						levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock);
 					}
 				}
-				levelArray[row][col].speed = col;
-				if (col == 6) levelArray[row][col].speed = 9;
-				if (col == 7) levelArray[row][col].speed = 10;
+				//levelArray[row][col].speed = 0-col;
+				//if (col == 6) levelArray[row][col].speed = -9;
+				//if (col == 7) levelArray[row][col].speed = -10;
 			}
 		}
-		currentLevel++;
+		createSpeedRectangle(3,3,2,2,.5f,.5f,-3);
+		createSpeedRectangle(5,10,2,3,1,1,4);
+		createSpeedRectangle(4,20,2,3,1,1,-10);
+		createSpeedRectangle(5,30,2,3,1,1,10
+				);
 	}
 	
-	// adds a block if placing a block here will not complete a trail
-	// of adjacently and diagonally connected blocks to an edge
-	/*
-	private void addBlockIfAppropriate(int initRow, int initCol) {
-		
-		// base case
-		
-		// recursive case
-		// if exists, then explore
-		if (initRow >= 0 && initRow >= upperLimit)
-		if (initCol >= 0 && initCol < this.width) {
-			
-			if (array[initRow][initCol].type != -1) {
-				
-			}
-		}
-	}
-	*/
 	// return whether placing a block here would still allow player to be unblocked
 	private boolean isSpotLegal(int row, int col) {
 		int upperLimit = row-8;
@@ -348,6 +336,111 @@ public class Matrix {
 			}
 		}
 		return row;
+	}
+	
+	// modifies the speed property of certain coins to create areas shaded red or green
+	private void createSpeedRectangle(int coreX, int coreY, int coreWidth, int coreHeight, float HorDecay, float VertDecay, int magnitude) {
+		// build core of blocks with speed of magnitude
+		for(int col=coreX; col<coreX+coreWidth; col++) {
+			for(int row=coreY; row<coreY+coreHeight; row++) {
+				Coin c = levelArray[row][col];
+				c.setSpeed(c.getSpeed() + magnitude);
+			}
+		}
+		
+		boolean isMagnitudePositive = (magnitude >= 0);
+		if (!isMagnitudePositive) magnitude *= -1;
+		
+		// build surrounding region that decays in magnitude as it moves outward
+		// build left region
+		float leftRemaining = magnitude-HorDecay;
+		int col = coreX-1;
+		int row = coreY-1;
+		int sectionHeight = coreHeight+2;
+		while(leftRemaining > 0) {
+			if (col < 0) break; // don't continue past left side of matrix
+			int localRow = row;
+			while(localRow < row+sectionHeight) {
+				if (row >= 0 && row < this.heightFull) {
+					Coin c = levelArray[localRow][col];
+					// set speed positive if magnitude parameter was positive
+					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)leftRemaining);
+					// set speed negative if magnitude parameter was negative
+					else c.setSpeed(c.getSpeed() + -1*(int)leftRemaining);
+				}
+				localRow++;
+			}
+			leftRemaining -= HorDecay;
+			row--;
+			col--;
+			sectionHeight += 2;
+		}
+		
+		// build right region
+		float rightRemaining = magnitude-HorDecay;
+		col = coreX+coreWidth;
+		row = coreY-1;
+		sectionHeight = coreHeight+2;
+		while(rightRemaining > 0) {
+			if (col >= this.width) break; // don't continue past right side of matrix
+			int localRow = row;
+			while(localRow < row+sectionHeight) {
+				if (row >= 0 && row < this.heightFull) {
+					Coin c = levelArray[localRow][col];
+					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)rightRemaining);
+					else c.setSpeed(c.getSpeed() + -1*(int)rightRemaining);
+				}
+				localRow++;
+			}
+			rightRemaining -= HorDecay;
+			row--;
+			col++;
+			sectionHeight += 2;
+		}
+		
+		// build top region
+		float topRemaining = magnitude-VertDecay;
+		col = coreX;
+		row = coreY-1;
+		int sectionWidth = coreWidth;
+		while(topRemaining > 0) {
+			if (row < 0) break; // don't continue past top of matrix
+			int localCol = col;
+			while(localCol < col+sectionWidth) {
+				if (localCol >= 0 && localCol < this.width) {
+					Coin c = levelArray[row][localCol];
+					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)topRemaining);
+					else c.setSpeed(c.getSpeed() + -1*(int)topRemaining);
+				}
+				localCol++;
+			}
+			topRemaining -= VertDecay;
+			row--;
+			col--;
+			sectionWidth += 2;
+		}
+		
+		// build bottom region
+		float bottomRemaining = magnitude-VertDecay;
+		col = coreX;
+		row = coreY+coreHeight;
+		sectionWidth = coreWidth;
+		while(bottomRemaining > 0) {
+			if (row >= this.heightFull) break; // don't continue past bottom of matrix
+			int localCol = col;
+			while(localCol < col+sectionWidth) {
+				if (localCol >= 0 && localCol < this.width) {
+					Coin c = levelArray[row][localCol];
+					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)bottomRemaining);
+					else c.setSpeed(c.getSpeed() + -1*(int)bottomRemaining);
+				}
+				localCol++;
+			}
+			bottomRemaining -= VertDecay;
+			row++;
+			col--;
+			sectionWidth += 2;
+		}
 	}
 	
 	private boolean prob(int range) {
