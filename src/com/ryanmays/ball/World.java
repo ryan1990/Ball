@@ -51,7 +51,7 @@ public class World {
     	Log.d("MyApp","ball before");
     	this.ball = new Ball();
     	this.man = new Man();
-    	this.matrix = new Matrix(8, 60, 11, 40);
+    	this.matrix = new Matrix(8, 80, 11, 40);
     	this.score = 30;
     	this.maxScore = 0;
     	this.beginFlashTime = 0;
@@ -180,9 +180,9 @@ public class World {
     	// weight is used to make vy change more proportionally consistent between positive and negative
     	float weight;
     	if (coinSpeed > 0) weight = vy;
-    	else weight = vy + vy*.01f*coinSpeed; // we add because coinSpeed is negative. weight will be less.
+    	else weight = vy + vy*.02f*coinSpeed; // we add because coinSpeed is negative. weight will be less.
     	
-    	float newVY = vy + weight*.01f*coinSpeed;
+    	float newVY = vy + weight*.02f*coinSpeed;
     	
     	float levelVY = matrix.levels[matrix.currentLevel][0];
     	float minLevelVY = 30;

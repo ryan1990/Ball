@@ -192,8 +192,48 @@ public class Matrix {
 			}
 		}
 		//createSpeedRectangle(0,this.heightFull/2,this.width,10,.15f,.15f,3);
-		createSpeedRectangle(0,20,this.width,1,1,1,8); // less death blocks in green?
-		createSpeedRectangle(0,40,this.width,1,1,1,-8);
+		
+		//createSpeedRectangle(7,10,1,40,.75f,10,4);
+		createSpeedRectangle(1,10,2,5,2,2,4);
+		createSpeedRectangle(0,10+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1+4,20,2,5,2,2,4);
+		createSpeedRectangle(0+4,20+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1,30,2,5,2,2,4);
+		createSpeedRectangle(0,30+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1+4,40,2,5,2,2,4);
+		createSpeedRectangle(0+4,40+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1,50,2,5,2,2,4);
+		createSpeedRectangle(0,50+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1+4,60,2,5,2,2,4);
+		createSpeedRectangle(0+4,60+6,4,3,0,0,-2);
+		
+		
+		/*
+		createSpeedRectangle(1,20,2,8,1,1,-2);
+		createSpeedRectangle(5,20,2,8,4,4,8);
+		
+		createSpeedRectangle(1,30,2,8,4,4,8);
+		createSpeedRectangle(5,30,2,8,1,1,-2);
+		
+		createSpeedRectangle(1,40,2,8,1,1,-2);
+		createSpeedRectangle(5,40,2,8,4,4,8);
+		
+		createSpeedRectangle(1,50,2,8,4,4,8);
+		createSpeedRectangle(5,50,2,8,1,1,-2);
+		
+		createSpeedRectangle(1,60,2,8,1,1,-2);
+		createSpeedRectangle(5,60,2,8,4,4,8);
+		*/
+		
+		//createSpeedRectangle(0,20,this.width,1,1,1,8); // less death blocks in green?
+		//createSpeedRectangle(0,40,this.width,1,1,1,-8);
+		
+		
 		//createSpeedRectangle(5,10,2,3,1,1,4);
 		//createSpeedRectangle(4,20,2,3,1,1,-10);
 		//createSpeedRectangle(5,30,2,3,1,1,10);
@@ -340,7 +380,7 @@ public class Matrix {
 	}
 	
 	// modifies the speed property of certain coins to create areas shaded red or green
-	private void createSpeedRectangle(int coreX, int coreY, int coreWidth, int coreHeight, float HorDecay, float VertDecay, int magnitude) {
+	private void createSpeedRectangle(int coreX, int coreY, int coreWidth, int coreHeight, float horDecay, float vertDecay, int magnitude) {
 		// build core of blocks with speed of magnitude
 		for(int col=coreX; col<coreX+coreWidth; col++) {
 			for(int row=coreY; row<coreY+coreHeight; row++) {
@@ -352,95 +392,99 @@ public class Matrix {
 		boolean isMagnitudePositive = (magnitude >= 0);
 		if (!isMagnitudePositive) magnitude *= -1;
 		
-		// build surrounding region that decays in magnitude as it moves outward
-		// build left region
-		float leftRemaining = magnitude-HorDecay;
-		int col = coreX-1;
-		int row = coreY-1;
-		int sectionHeight = coreHeight+2;
-		while(leftRemaining > 0) {
-			if (col < 0) break; // don't continue past left side of matrix
-			int localRow = row;
-			while(localRow < row+sectionHeight) {
-				if (row >= 0 && row < this.heightFull) {
-					Coin c = levelArray[localRow][col];
-					// set speed positive if magnitude parameter was positive
-					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)leftRemaining);
-					// set speed negative if magnitude parameter was negative
-					else c.setSpeed(c.getSpeed() + -1*(int)leftRemaining);
+		if (horDecay!=0) {
+			// build surrounding region that decays in magnitude as it moves outward
+			// build left region
+			float leftRemaining = magnitude-horDecay;
+			int col = coreX-1;
+			int row = coreY-1;
+			int sectionHeight = coreHeight+2;
+			while(leftRemaining > 0) {
+				if (col < 0) break; // don't continue past left side of matrix
+				int localRow = row;
+				while(localRow < row+sectionHeight) {
+					if (row >= 0 && row < this.heightFull) {
+						Coin c = levelArray[localRow][col];
+						// set speed positive if magnitude parameter was positive
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)leftRemaining);
+						// set speed negative if magnitude parameter was negative
+						else c.setSpeed(c.getSpeed() + -1*(int)leftRemaining);
+					}
+					localRow++;
 				}
-				localRow++;
+				leftRemaining -= horDecay;
+				row--;
+				col--;
+				sectionHeight += 2;
 			}
-			leftRemaining -= HorDecay;
-			row--;
-			col--;
-			sectionHeight += 2;
+			
+			// build right region
+			float rightRemaining = magnitude-horDecay;
+			col = coreX+coreWidth;
+			row = coreY-1;
+			sectionHeight = coreHeight+2;
+			while(rightRemaining > 0) {
+				if (col >= this.width) break; // don't continue past right side of matrix
+				int localRow = row;
+				while(localRow < row+sectionHeight) {
+					if (row >= 0 && row < this.heightFull) {
+						Coin c = levelArray[localRow][col];
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)rightRemaining);
+						else c.setSpeed(c.getSpeed() + -1*(int)rightRemaining);
+					}
+					localRow++;
+				}
+				rightRemaining -= horDecay;
+				row--;
+				col++;
+				sectionHeight += 2;
+			}
 		}
 		
-		// build right region
-		float rightRemaining = magnitude-HorDecay;
-		col = coreX+coreWidth;
-		row = coreY-1;
-		sectionHeight = coreHeight+2;
-		while(rightRemaining > 0) {
-			if (col >= this.width) break; // don't continue past right side of matrix
-			int localRow = row;
-			while(localRow < row+sectionHeight) {
-				if (row >= 0 && row < this.heightFull) {
-					Coin c = levelArray[localRow][col];
-					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)rightRemaining);
-					else c.setSpeed(c.getSpeed() + -1*(int)rightRemaining);
+		if (vertDecay!=0) {
+			// build top region
+			float topRemaining = magnitude-vertDecay;
+			int col = coreX;
+			int row = coreY-1;
+			int sectionWidth = coreWidth;
+			while(topRemaining > 0) {
+				if (row < 0) break; // don't continue past top of matrix
+				int localCol = col;
+				while(localCol < col+sectionWidth) {
+					if (localCol >= 0 && localCol < this.width) {
+						Coin c = levelArray[row][localCol];
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)topRemaining);
+						else c.setSpeed(c.getSpeed() + -1*(int)topRemaining);
+					}
+					localCol++;
 				}
-				localRow++;
+				topRemaining -= vertDecay;
+				row--;
+				col--;
+				sectionWidth += 2;
 			}
-			rightRemaining -= HorDecay;
-			row--;
-			col++;
-			sectionHeight += 2;
-		}
-		
-		// build top region
-		float topRemaining = magnitude-VertDecay;
-		col = coreX;
-		row = coreY-1;
-		int sectionWidth = coreWidth;
-		while(topRemaining > 0) {
-			if (row < 0) break; // don't continue past top of matrix
-			int localCol = col;
-			while(localCol < col+sectionWidth) {
-				if (localCol >= 0 && localCol < this.width) {
-					Coin c = levelArray[row][localCol];
-					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)topRemaining);
-					else c.setSpeed(c.getSpeed() + -1*(int)topRemaining);
+			
+			// build bottom region
+			float bottomRemaining = magnitude-vertDecay;
+			col = coreX;
+			row = coreY+coreHeight;
+			sectionWidth = coreWidth;
+			while(bottomRemaining > 0) {
+				if (row >= this.heightFull) break; // don't continue past bottom of matrix
+				int localCol = col;
+				while(localCol < col+sectionWidth) {
+					if (localCol >= 0 && localCol < this.width) {
+						Coin c = levelArray[row][localCol];
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)bottomRemaining);
+						else c.setSpeed(c.getSpeed() + -1*(int)bottomRemaining);
+					}
+					localCol++;
 				}
-				localCol++;
+				bottomRemaining -= vertDecay;
+				row++;
+				col--;
+				sectionWidth += 2;
 			}
-			topRemaining -= VertDecay;
-			row--;
-			col--;
-			sectionWidth += 2;
-		}
-		
-		// build bottom region
-		float bottomRemaining = magnitude-VertDecay;
-		col = coreX;
-		row = coreY+coreHeight;
-		sectionWidth = coreWidth;
-		while(bottomRemaining > 0) {
-			if (row >= this.heightFull) break; // don't continue past bottom of matrix
-			int localCol = col;
-			while(localCol < col+sectionWidth) {
-				if (localCol >= 0 && localCol < this.width) {
-					Coin c = levelArray[row][localCol];
-					if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)bottomRemaining);
-					else c.setSpeed(c.getSpeed() + -1*(int)bottomRemaining);
-				}
-				localCol++;
-			}
-			bottomRemaining -= VertDecay;
-			row++;
-			col--;
-			sectionWidth += 2;
 		}
 	}
 	
