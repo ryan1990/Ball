@@ -194,8 +194,10 @@ public class Matrix {
 		//createSpeedRectangle(0,this.heightFull/2,this.width,10,.15f,.15f,3);
 		
 		//createSpeedRectangle(7,10,1,40,.75f,10,4);
+		//buildAlternatingRectangles();
+		//buildConcave();
+		buildSpine();
 		
-		buildConcave();
 		
 		/*
 		createSpeedRectangle(1,20,2,8,1,1,-2);
@@ -246,6 +248,10 @@ public class Matrix {
 	private void buildConcave() {
 		createSpeedRectangle(0,10,1,this.heightFull-20,1,0,2);
 		createSpeedRectangle(7,10,1,this.heightFull-20,1,0,2);
+	}
+	
+	private void buildSpine() {
+		createSpeedRectangle(3,10,2,this.heightFull-20,0,0,1);
 	}
 	
 	// return whether placing a block here would still allow player to be unblocked
