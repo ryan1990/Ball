@@ -194,24 +194,8 @@ public class Matrix {
 		//createSpeedRectangle(0,this.heightFull/2,this.width,10,.15f,.15f,3);
 		
 		//createSpeedRectangle(7,10,1,40,.75f,10,4);
-		createSpeedRectangle(1,10,2,5,2,2,4);
-		createSpeedRectangle(0,10+6,4,3,0,0,-2);
 		
-		createSpeedRectangle(1+4,20,2,5,2,2,4);
-		createSpeedRectangle(0+4,20+6,4,3,0,0,-2);
-		
-		createSpeedRectangle(1,30,2,5,2,2,4);
-		createSpeedRectangle(0,30+6,4,3,0,0,-2);
-		
-		createSpeedRectangle(1+4,40,2,5,2,2,4);
-		createSpeedRectangle(0+4,40+6,4,3,0,0,-2);
-		
-		createSpeedRectangle(1,50,2,5,2,2,4);
-		createSpeedRectangle(0,50+6,4,3,0,0,-2);
-		
-		createSpeedRectangle(1+4,60,2,5,2,2,4);
-		createSpeedRectangle(0+4,60+6,4,3,0,0,-2);
-		
+		buildConcave();
 		
 		/*
 		createSpeedRectangle(1,20,2,8,1,1,-2);
@@ -237,6 +221,31 @@ public class Matrix {
 		//createSpeedRectangle(5,10,2,3,1,1,4);
 		//createSpeedRectangle(4,20,2,3,1,1,-10);
 		//createSpeedRectangle(5,30,2,3,1,1,10);
+	}
+	
+	private void buildAlternatingRectangles() {
+		createSpeedRectangle(1,10,2,5,2,2,4);
+		createSpeedRectangle(0,10+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1+4,20,2,5,2,2,4);
+		createSpeedRectangle(0+4,20+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1,30,2,5,2,2,4);
+		createSpeedRectangle(0,30+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1+4,40,2,5,2,2,4);
+		createSpeedRectangle(0+4,40+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1,50,2,5,2,2,4);
+		createSpeedRectangle(0,50+6,4,3,0,0,-2);
+		
+		createSpeedRectangle(1+4,60,2,5,2,2,4);
+		createSpeedRectangle(0+4,60+6,4,3,0,0,-2);
+	}
+	
+	private void buildConcave() {
+		createSpeedRectangle(0,10,1,this.heightFull-20,1,0,2);
+		createSpeedRectangle(7,10,1,this.heightFull-20,1,0,2);
 	}
 	
 	// return whether placing a block here would still allow player to be unblocked
@@ -397,8 +406,15 @@ public class Matrix {
 			// build left region
 			float leftRemaining = magnitude-horDecay;
 			int col = coreX-1;
-			int row = coreY-1;
-			int sectionHeight = coreHeight+2;
+			int row;
+			int sectionHeight;
+			if (vertDecay!=0) {
+				row = coreY-1;
+				sectionHeight = coreHeight+2;
+			} else {
+				row = coreY;
+				sectionHeight = coreHeight;
+			}
 			while(leftRemaining > 0) {
 				if (col < 0) break; // don't continue past left side of matrix
 				int localRow = row;
@@ -413,16 +429,25 @@ public class Matrix {
 					localRow++;
 				}
 				leftRemaining -= horDecay;
-				row--;
 				col--;
-				sectionHeight += 2;
+				if (vertDecay!=0) {
+					row--;
+					sectionHeight += 2;
+				}
 			}
 			
 			// build right region
 			float rightRemaining = magnitude-horDecay;
 			col = coreX+coreWidth;
-			row = coreY-1;
-			sectionHeight = coreHeight+2;
+			
+			if (vertDecay!=0) {
+				row = coreY-1;
+				sectionHeight = coreHeight+2;
+			}
+			else {
+				row = coreY;
+				sectionHeight = coreHeight;
+			}
 			while(rightRemaining > 0) {
 				if (col >= this.width) break; // don't continue past right side of matrix
 				int localRow = row;
@@ -435,9 +460,11 @@ public class Matrix {
 					localRow++;
 				}
 				rightRemaining -= horDecay;
-				row--;
 				col++;
-				sectionHeight += 2;
+				if (vertDecay!=0) {
+					row--;
+					sectionHeight += 2;
+				}
 			}
 		}
 		
@@ -447,6 +474,7 @@ public class Matrix {
 			int col = coreX;
 			int row = coreY-1;
 			int sectionWidth = coreWidth;
+			
 			while(topRemaining > 0) {
 				if (row < 0) break; // don't continue past top of matrix
 				int localCol = col;
@@ -460,15 +488,19 @@ public class Matrix {
 				}
 				topRemaining -= vertDecay;
 				row--;
-				col--;
-				sectionWidth += 2;
+				if (horDecay!=0) {
+					col--;
+					sectionWidth += 2;
+				}
 			}
 			
 			// build bottom region
 			float bottomRemaining = magnitude-vertDecay;
 			col = coreX;
 			row = coreY+coreHeight;
+			
 			sectionWidth = coreWidth;
+			
 			while(bottomRemaining > 0) {
 				if (row >= this.heightFull) break; // don't continue past bottom of matrix
 				int localCol = col;
@@ -482,8 +514,10 @@ public class Matrix {
 				}
 				bottomRemaining -= vertDecay;
 				row++;
-				col--;
-				sectionWidth += 2;
+				if (horDecay!=0) {
+					col--;
+					sectionWidth += 2;
+				}
 			}
 		}
 	}
