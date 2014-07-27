@@ -76,7 +76,7 @@ public class WorldRenderer {
         		Coin coin = world.matrix.levelArray[row+world.matrix.getTopRow()][col];
         		
         		if (coin.getSpeed()!=0) {
-					game.drawRectangle(col*world.matrix.pixelsInBlock, (row+world.matrix.getTopRow())*world.matrix.pixelsInBlock - (int)world.matrix.y, world.matrix.pixelsInBlock, world.matrix.pixelsInBlock, coin.getColor());
+					game.drawRectangle(col*world.matrix.pixelsInBlock, (row+world.matrix.getTopRow())*world.matrix.pixelsInBlock - (int)world.matrix.y, world.matrix.pixelsInBlock, world.matrix.pixelsInBlock, (int)coin.getColor());
 				}
         	}
     	}

@@ -1,10 +1,11 @@
 package com.ryanmays.ball;
 
 import android.graphics.Color;
+import android.util.Log;
 
 public class Coin {
 	public int type;
-	private int speed;
+	private float speed;
 	public boolean hit;
 	public static float WIDTH = 40;
     public static float HEIGHT = 40;
@@ -18,25 +19,26 @@ public class Coin {
     	this.hit = false;
     }
     
-    public int getColor() {
-    	int red = 10;
-    	int green = 0;
-    	int blue = 50;
+    public float getColor() {
+    	float red = 10;
+    	float green = 0;
+    	float blue = 50;
     	
     	if (speed > 0) {
-    		green += getSpeedAdjustedForColor(speed)*15;
+    		green += getSpeedAdjustedForColor(speed)*13;
     	} else if (speed < 0) {
-    		red += getSpeedAdjustedForColor(-1*speed)*15;
+    		red += getSpeedAdjustedForColor(-1*speed)*13;
     	}
     	
-    	return new Color().rgb(red, green, blue);
+    	Log.d("MyApp","COLOR r="+red+", g="+green+"b="+blue);
+    	return new Color().rgb((int)red, (int)green, (int)blue);
     }
     
-    public int getSpeed() {
+    public float getSpeed() {
     	return this.speed;
     }
     
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
     	// keep speed between -10 and 10
     	if (speed > 10) this.speed = 10;
     	else if (speed < -10) this.speed = -10;
@@ -44,11 +46,11 @@ public class Coin {
     }
     
     // returns a modified speed to improve color contrast
-    private float getSpeedAdjustedForColor(int speed) {
+    private float getSpeedAdjustedForColor(float speed) {
     	float startingValue = 3;
-    	int max = 10;
+    	float max = 10;
     	float difference = max - startingValue;
     	
-    	return startingValue + ((1.0f*speed)/(1.0f*max))*difference;
+    	return startingValue + (speed/max)*difference;
     }
 }

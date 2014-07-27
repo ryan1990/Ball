@@ -196,8 +196,9 @@ public class Matrix {
 		//createSpeedRectangle(7,10,1,40,.75f,10,4);
 		//buildAlternatingRectangles();
 		//buildConcave();
-		buildSpine();
-		
+		//buildSpine();
+		//buildSpots();
+		buildRoller();
 		
 		/*
 		createSpeedRectangle(1,20,2,8,1,1,-2);
@@ -252,6 +253,26 @@ public class Matrix {
 	
 	private void buildSpine() {
 		createSpeedRectangle(3,10,2,this.heightFull-20,0,0,1);
+	}
+	
+	private void buildSpots() {
+		createSpeedRectangle(0,10,this.width,this.heightFull-20,0,0,2);
+		createSpeedRectangle(0,12,1,2,2,2,-6);
+		createSpeedRectangle(5,15,2,1,2,2,8);
+		createSpeedRectangle(5,20,2,5,2,2,-6);
+		createSpeedRectangle(3,27,3,1,2,2,8);
+		createSpeedRectangle(0,33,2,7,2,2,-4);
+		createSpeedRectangle(5,42,2,1,2,2,6);
+		createSpeedRectangle(4,48,3,7,1,1,-2);
+		createSpeedRectangle(0,60,2,6,2,2,-4);
+		//createSpeedRectangle(2,5,2,2,0,0,-6f);
+	}
+	
+	private void buildRoller() {
+		createSpeedRectangle(0,20,this.width,4,7,5,10);
+		createSpeedRectangle(0,35,this.width,4,7,5,-10);
+		createSpeedRectangle(0,50,this.width,6,7,5,10);
+		//createSpeedRectangle(0,,this.width,6,5,5,-10);
 	}
 	
 	// return whether placing a block here would still allow player to be unblocked
@@ -395,7 +416,7 @@ public class Matrix {
 	}
 	
 	// modifies the speed property of certain coins to create areas shaded red or green
-	private void createSpeedRectangle(int coreX, int coreY, int coreWidth, int coreHeight, float horDecay, float vertDecay, int magnitude) {
+	private void createSpeedRectangle(int coreX, int coreY, int coreWidth, int coreHeight, float horDecay, float vertDecay, float magnitude) {
 		// build core of blocks with speed of magnitude
 		for(int col=coreX; col<coreX+coreWidth; col++) {
 			for(int row=coreY; row<coreY+coreHeight; row++) {
@@ -428,9 +449,9 @@ public class Matrix {
 					if (row >= 0 && row < this.heightFull) {
 						Coin c = levelArray[localRow][col];
 						// set speed positive if magnitude parameter was positive
-						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)leftRemaining);
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + leftRemaining);
 						// set speed negative if magnitude parameter was negative
-						else c.setSpeed(c.getSpeed() + -1*(int)leftRemaining);
+						else c.setSpeed(c.getSpeed() + -1*leftRemaining);
 					}
 					localRow++;
 				}
@@ -460,8 +481,8 @@ public class Matrix {
 				while(localRow < row+sectionHeight) {
 					if (row >= 0 && row < this.heightFull) {
 						Coin c = levelArray[localRow][col];
-						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)rightRemaining);
-						else c.setSpeed(c.getSpeed() + -1*(int)rightRemaining);
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + rightRemaining);
+						else c.setSpeed(c.getSpeed() + -1*rightRemaining);
 					}
 					localRow++;
 				}
@@ -487,8 +508,8 @@ public class Matrix {
 				while(localCol < col+sectionWidth) {
 					if (localCol >= 0 && localCol < this.width) {
 						Coin c = levelArray[row][localCol];
-						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)topRemaining);
-						else c.setSpeed(c.getSpeed() + -1*(int)topRemaining);
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + topRemaining);
+						else c.setSpeed(c.getSpeed() + -1*topRemaining);
 					}
 					localCol++;
 				}
@@ -513,8 +534,8 @@ public class Matrix {
 				while(localCol < col+sectionWidth) {
 					if (localCol >= 0 && localCol < this.width) {
 						Coin c = levelArray[row][localCol];
-						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + (int)bottomRemaining);
-						else c.setSpeed(c.getSpeed() + -1*(int)bottomRemaining);
+						if (isMagnitudePositive) c.setSpeed(c.getSpeed() + bottomRemaining);
+						else c.setSpeed(c.getSpeed() + -1*bottomRemaining);
 					}
 					localCol++;
 				}

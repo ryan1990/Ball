@@ -176,13 +176,13 @@ public class World {
 		}
     }
     
-    private float adjustedVY(float vy, int coinSpeed) {
+    private float adjustedVY(float vy, float coinSpeed) {
     	// weight is used to make vy change more proportionally consistent between positive and negative
     	float weight;
     	if (coinSpeed > 0) weight = vy;
-    	else weight = vy + vy*.02f*coinSpeed; // we add because coinSpeed is negative. weight will be less.
+    	else weight = vy + vy*.012f*coinSpeed; // we add because coinSpeed is negative. weight will be less.
     	
-    	float newVY = vy + weight*.02f*coinSpeed;
+    	float newVY = vy + weight*.012f*coinSpeed;
     	
     	float levelVY = matrix.levels[matrix.currentLevel][0];
     	float minLevelVY = 30;
