@@ -49,17 +49,17 @@ public class Matrix {
 		levels[1][0] = 110;
 		levels[1][1] = 1;
 		// 2
-		levels[2][0] = 60;
-		levels[2][1] = 2.5f;
+		levels[2][0] = 110;//60;
+		levels[2][1] = 1.5f;//2.5f;
 		// 3
-		levels[3][0] = 160;
-		levels[3][1] = 1.5f;
+		levels[0][0] = 90;
+		levels[0][1] = 1.5f;
 		// 4
-		levels[4][0] = 70;
-		levels[4][1] = 3;
+		levels[0][0] = 100;
+		levels[0][1] = 1.5f;
 		// 5
-		levels[5][0] = 200;
-		levels[5][1] = 1.5f;
+		levels[0][0] = 130;
+		levels[0][1] = 1;
 		// 6
 		levels[6][0] = 110;
 		levels[6][1] = 3.5f;
@@ -173,7 +173,9 @@ public class Matrix {
 						levelArray[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
 					}
 				} else { // !rowArray[col]
-					if (prob(50)) {
+					if (prob(70)) {
+						levelArray[row][col] = new Coin(4, col*pixelsInBlock, row*pixelsInBlock);
+					} else if (prob(50)) {
 						levelArray[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
 						//rowIsEmpty = false;
 					} else if (prob(15)) {
@@ -196,9 +198,11 @@ public class Matrix {
 		//createSpeedRectangle(7,10,1,40,.75f,10,4);
 		//buildAlternatingRectangles();
 		//buildConcave();
-		//buildSpine();
+		buildSpots();
 		//buildSpots();
-		buildRoller();
+		//buildRoller();
+		
+		//buildSpeedBlockMap(currentLevel);
 		
 		/*
 		createSpeedRectangle(1,20,2,8,1,1,-2);
@@ -226,6 +230,20 @@ public class Matrix {
 		//createSpeedRectangle(5,30,2,3,1,1,10);
 	}
 	
+	private void buildSpeedBlockMap(int level) {
+		switch (level) {
+			case 2:
+				buildRoller();
+				break;
+			case 3:
+				buildSpots();
+				break;
+			case 4:
+				buildConcave();
+				break;
+		}
+	}
+	
 	private void buildAlternatingRectangles() {
 		createSpeedRectangle(1,10,2,5,2,2,4);
 		createSpeedRectangle(0,10+6,4,3,0,0,-2);
@@ -247,12 +265,12 @@ public class Matrix {
 	}
 	
 	private void buildConcave() {
-		createSpeedRectangle(0,10,1,this.heightFull-20,1,0,2);
-		createSpeedRectangle(7,10,1,this.heightFull-20,1,0,2);
+		createSpeedRectangle(0,10,1,this.heightFull-20,2,0,4);
+		createSpeedRectangle(7,10,1,this.heightFull-20,2,0,4);
 	}
 	
 	private void buildSpine() {
-		createSpeedRectangle(3,10,2,this.heightFull-20,0,0,1);
+		createSpeedRectangle(3,10,2,this.heightFull-20,0,0,3);
 	}
 	
 	private void buildSpots() {
@@ -269,9 +287,9 @@ public class Matrix {
 	}
 	
 	private void buildRoller() {
-		createSpeedRectangle(0,20,this.width,4,7,5,10);
-		createSpeedRectangle(0,35,this.width,4,7,5,-10);
-		createSpeedRectangle(0,50,this.width,6,7,5,10);
+		createSpeedRectangle(0,15,this.width,4,7,5,10);
+		createSpeedRectangle(0,30,this.width,4,7,5,-10);
+		createSpeedRectangle(0,45,this.width,4,7,5,10);
 		//createSpeedRectangle(0,,this.width,6,5,5,-10);
 	}
 	

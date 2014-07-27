@@ -38,6 +38,7 @@ public class WorldRenderer {
     Bitmap manImage;
     Bitmap beamImage;
     Bitmap coinBlackImage;
+    Bitmap coin20Image;
     Bitmap coinGoldImage;
     Bitmap coinSilverImage;
     Bitmap coinBronzeImage;
@@ -54,8 +55,9 @@ public class WorldRenderer {
         this.manImage = game.loadBitmap("man2.png");
         this.beamImage = game.loadBitmap("beam.png");
         this.coinBlackImage = game.loadBitmap("deathblock.png");
+        this.coin20Image = game.loadBitmap("coin20.png");
         this.coinGoldImage = game.loadBitmap("coingold.png");
-        this.coinSilverImage = game.loadBitmap("coinsilver.png");
+        this.coinSilverImage = game.loadBitmap("coinnewsilver2.png");
         this.coinBronzeImage = game.loadBitmap("coinbronze.png");
         this.topBarImage = game.loadBitmap("topBar.png");
         this.paddleImage = game.loadBitmap("paddle.png");
@@ -104,6 +106,8 @@ public class WorldRenderer {
         			case 3:
         				game.drawBitmap(coinGoldImage, col*world.matrix.pixelsInBlock, (row+world.matrix.getTopRow())*world.matrix.pixelsInBlock - (int)world.matrix.y);
         				break;
+        			case 4:
+        				game.drawBitmap(coin20Image, col*world.matrix.pixelsInBlock, (row+world.matrix.getTopRow())*world.matrix.pixelsInBlock - (int)world.matrix.y);
         		}
         	}
         }

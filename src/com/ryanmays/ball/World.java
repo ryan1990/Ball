@@ -159,6 +159,7 @@ public class World {
     				if (coin.type == 1) score++;
     				else if (coin.type == 2) score += 2;
     				else if (coin.type == 3) score += 3;
+    				else if (coin.type == 4) score += 20;
     				else if (coin.type == 0) {
     					score -= 10;
     					flash();
