@@ -22,6 +22,7 @@ public class Matrix {
 	public int currentLevel;
 	List<Point> leftConnected;
 	List<Point> rightConnected;
+	List<Point> greenBlocks20;
 	
 	public Matrix(int width, int heightFull, int windowHeight, int pixelsInBlock) {
 		this.width = width;
@@ -36,6 +37,8 @@ public class Matrix {
 		
 		this.leftConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to left side
 		this.rightConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to right side
+		
+		this.greenBlocks20 = new ArrayList<Point>(); // stores coordinates of blocks that will have surrounding green patches
 		
 		buildLevels();
 	}
@@ -52,14 +55,14 @@ public class Matrix {
 		levels[2][0] = 110;//60;
 		levels[2][1] = 1.5f;//2.5f;
 		// 3
-		levels[0][0] = 90;
-		levels[0][1] = 1.5f;
+		levels[3][0] = 90;
+		levels[3][1] = 1.5f;
 		// 4
-		levels[0][0] = 100;
-		levels[0][1] = 1.5f;
+		levels[4][0] = 100;
+		levels[4][1] = 1.5f;
 		// 5
-		levels[0][0] = 130;
-		levels[0][1] = 1;
+		levels[5][0] = 130;
+		levels[5][1] = 1;
 		// 6
 		levels[6][0] = 110;
 		levels[6][1] = 3.5f;
@@ -173,8 +176,9 @@ public class Matrix {
 						levelArray[row][col] = new Coin(0, col*pixelsInBlock, row*pixelsInBlock);
 					}
 				} else { // !rowArray[col]
-					if (prob(70)) {
+					if (prob20(currentLevel)) {
 						levelArray[row][col] = new Coin(4, col*pixelsInBlock, row*pixelsInBlock);
+						greenBlocks20.add(new Point(col,row));
 					} else if (prob(50)) {
 						levelArray[row][col] = new Coin(3, col*pixelsInBlock, row*pixelsInBlock);
 						//rowIsEmpty = false;
@@ -198,11 +202,13 @@ public class Matrix {
 		//createSpeedRectangle(7,10,1,40,.75f,10,4);
 		//buildAlternatingRectangles();
 		//buildConcave();
-		buildSpots();
+		//buildSpots();
 		//buildSpots();
 		//buildRoller();
 		
-		//buildSpeedBlockMap(currentLevel);
+		buildSpeedBlockMap(currentLevel);
+		buildGreenBlocks20();
+		//createSpeedRectangle(4,12,3,7,2.5f,2.5f,10);
 		
 		/*
 		createSpeedRectangle(1,20,2,8,1,1,-2);
@@ -241,6 +247,15 @@ public class Matrix {
 			case 4:
 				buildConcave();
 				break;
+		}
+	}
+	
+	private void buildGreenBlocks20() {
+		for (int i=0; i<greenBlocks20.size(); i++) {
+			Point block = greenBlocks20.get(i);
+			if (block.x == 0) block.x = 1;
+			if (block.y < 3) block.y = 3;
+			createSpeedRectangle(block.x-1,block.y-3,3,7,2.5f,2.5f,10);
 		}
 	}
 	
@@ -435,6 +450,14 @@ public class Matrix {
 	
 	// modifies the speed property of certain coins to create areas shaded red or green
 	private void createSpeedRectangle(int coreX, int coreY, int coreWidth, int coreHeight, float horDecay, float vertDecay, float magnitude) {
+		if (coreX < 0 || coreX >= this.width) throw new IllegalArgumentException("coreX out of range");
+		else if (coreY < 0 || coreY >= this.heightFull) throw new IllegalArgumentException("coreY out of range");
+		else if (coreWidth <= 0) throw new IllegalArgumentException("coreWidth must be > 0");
+		else if (coreHeight <= 0) throw new IllegalArgumentException("coreHeight must be > 0");
+		else if (horDecay < 0) throw new IllegalArgumentException("horDecay must be >= 0");
+		else if (vertDecay < 0) throw new IllegalArgumentException("vertDecay must be >= 0");
+		else if (magnitude < -10 || magnitude > 10) throw new IllegalArgumentException("magnitude must be between -10 and 10");
+		
 		// build core of blocks with speed of magnitude
 		for(int col=coreX; col<coreX+coreWidth; col++) {
 			for(int row=coreY; row<coreY+coreHeight; row++) {
@@ -570,6 +593,18 @@ public class Matrix {
 	private boolean prob(int range) {
 		Random rand = new Random();
 		int n = rand.nextInt(range);
+		return n == 0;
+	}
+	
+	private boolean prob20(int level) {
+		int threshold = 2; // to prevent 20s up through level 2
+		if (level <= threshold) return false;
+		int adjustedLevel = level - threshold;
+		int totalOpportunities = this.width*this.heightFull;
+		int customOpportunities = totalOpportunities/adjustedLevel;
+		
+		Random rand = new Random();
+		int n = rand.nextInt(customOpportunities);
 		return n == 0;
 	}
 	
