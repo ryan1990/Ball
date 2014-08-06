@@ -185,7 +185,7 @@ public class World {
     	
     	float newVY = vy + weight*.012f*coinSpeed;
     	
-    	float levelVY = matrix.levels[matrix.currentLevel][0];
+    	float levelVY = matrix.levels.get(matrix.currentLevel).velocity;
     	float minLevelVY = 30;
     	
     	if (newVY < minLevelVY) newVY = minLevelVY;

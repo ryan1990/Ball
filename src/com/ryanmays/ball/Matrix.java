@@ -17,12 +17,11 @@ public class Matrix {
     float vy;
     float acceleration = 0;//.3f;
 	public Coin[][] levelArray;
-	float[][] levels;
+	public List<Level> levels;
 	int lastKnownLevel;
 	public int currentLevel;
 	List<Point> leftConnected;
 	List<Point> rightConnected;
-	List<Point> greenBlocks20;
 	
 	public Matrix(int width, int heightFull, int windowHeight, int pixelsInBlock) {
 		this.width = width;
@@ -31,32 +30,47 @@ public class Matrix {
 		this.pixelsInBlock = pixelsInBlock;
 		
 		this.levelArray = new Coin[heightFull][width];
-		this.levels = new float[30][2];
+		this.levels = new ArrayList<Level>();//new float[30][2];
 		this.lastKnownLevel = -1;
 		this.currentLevel = -1;
 		
 		this.leftConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to left side
 		this.rightConnected = new ArrayList<Point>(); // stores coordinates of blocks connected to right side
-		
-		this.greenBlocks20 = new ArrayList<Point>(); // stores coordinates of blocks that will have surrounding green patches
-		
+				
 		buildLevels();
+	}
+	
+	public class Level {
+		public float velocity;
+		public float density;
+		
+		public Level(float velocity, float density) {
+			this.velocity = velocity;
+			this.density = density;
+		}
 	}
 	
 	// set up each level that will be stored in levels array
 	private void buildLevels() {
+		levels.add(new Level(4000,0));
+		levels.add(new Level(4000,0));
+		levels.add(new Level(4000,0));
+		levels.add(new Level(4000,0));
+		levels.add(new Level(80,1.5f));//60,2.5f centered blobs //100,1 blobs
+		levels.add(new Level(110,1.5f));
+		/*
 		// 0
-		levels[0][0] = 70;
-		levels[0][1] = 1;
+		levels[0][0] = 4170;
+		levels[0][1] = 0;
 		// 1
-		levels[1][0] = 110;
-		levels[1][1] = 1;
+		levels[1][0] = 4110;
+		levels[1][1] = 0;
 		// 2
-		levels[2][0] = 110;//60;
-		levels[2][1] = 1.5f;//2.5f;
+		levels[2][0] = 4111;//110;//60;
+		levels[2][1] = 0;//1.5f;//2.5f;
 		// 3
 		levels[3][0] = 90;
-		levels[3][1] = 1.5f;
+		levels[3][1] = 2;
 		// 4
 		levels[4][0] = 100;
 		levels[4][1] = 1.5f;
@@ -125,6 +139,8 @@ public class Matrix {
 	
 	// adds and sets up the next level
 	public void buildNextLevel() {
+		List<Point> greenBlocks20 = new ArrayList<Point>();
+		
 		currentLevel++;
 		
 		for(int row=0; row<heightFull; row++) {
@@ -132,25 +148,9 @@ public class Matrix {
 				levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock);
 			}
 		}
-		/*
-		if (isSpotLegal(6,0)) { Log.d("MyApp", "60 legal"); array[6][0].type = 0;}// = new Coin(0, 0*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,1)) { Log.d("MyApp", "61 legal"); array[6][1].type = 0;}// = new Coin(0, 1*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,2)) { Log.d("MyApp", "62 legal"); array[6][2].type = 0;}// = new Coin(0, 2*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,3)) { Log.d("MyApp", "63 legal"); array[6][3].type = 0;}// = new Coin(0, 3*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,4)) { Log.d("MyApp", "64 legal"); array[6][4].type = 0;}// = new Coin(0, 4*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,5)) { Log.d("MyApp", "65 legal"); array[6][5].type = 0;}// = new Coin(0, 5*pixelsInBlock, 6*pixelsInBlock, true);
 		
-		if (isSpotLegal(6,7)) { Log.d("MyApp", "67 legal"); array[6][7].type = 0;}// = new Coin(0, 7*pixelsInBlock, 6*pixelsInBlock, true);
-		if (isSpotLegal(6,6)) { Log.d("MyApp", "66 legal"); array[6][6].type = 0;}// = new Coin(0, 6*pixelsInBlock, 6*pixelsInBlock, true);
-		*/
-		
-		/*
-		if (foundLeftConnection(6, 0, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 0");
-		if (foundLeftConnection(6, 1, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 1");
-		if (foundLeftConnection(6, 2, 0, new ArrayList<Point>())) Log.d("MyApp", "FOUND 6 3");
-		*/
-		vy = levels[currentLevel][0];
-		float averagePerRow = levels[currentLevel][1];
+		vy = levels.get(currentLevel).velocity;
+		float averagePerRow = levels.get(currentLevel).density;
 		Random rand = new Random();
 		
 		for(int row=5; row<heightFull-windowHeight; row++) {
@@ -192,48 +192,11 @@ public class Matrix {
 						levelArray[row][col] = new Coin(-1, col*pixelsInBlock, row*pixelsInBlock);
 					}
 				}
-				//levelArray[row][col].speed = 0-col;
-				//if (col == 6) levelArray[row][col].speed = -9;
-				//if (col == 7) levelArray[row][col].speed = -10;
 			}
 		}
-		//createSpeedRectangle(0,this.heightFull/2,this.width,10,.15f,.15f,3);
-		
-		//createSpeedRectangle(7,10,1,40,.75f,10,4);
-		//buildAlternatingRectangles();
-		//buildConcave();
-		//buildSpots();
-		//buildSpots();
-		//buildRoller();
 		
 		buildSpeedBlockMap(currentLevel);
-		buildGreenBlocks20();
-		//createSpeedRectangle(4,12,3,7,2.5f,2.5f,10);
-		
-		/*
-		createSpeedRectangle(1,20,2,8,1,1,-2);
-		createSpeedRectangle(5,20,2,8,4,4,8);
-		
-		createSpeedRectangle(1,30,2,8,4,4,8);
-		createSpeedRectangle(5,30,2,8,1,1,-2);
-		
-		createSpeedRectangle(1,40,2,8,1,1,-2);
-		createSpeedRectangle(5,40,2,8,4,4,8);
-		
-		createSpeedRectangle(1,50,2,8,4,4,8);
-		createSpeedRectangle(5,50,2,8,1,1,-2);
-		
-		createSpeedRectangle(1,60,2,8,1,1,-2);
-		createSpeedRectangle(5,60,2,8,4,4,8);
-		*/
-		
-		//createSpeedRectangle(0,20,this.width,1,1,1,8); // less death blocks in green?
-		//createSpeedRectangle(0,40,this.width,1,1,1,-8);
-		
-		
-		//createSpeedRectangle(5,10,2,3,1,1,4);
-		//createSpeedRectangle(4,20,2,3,1,1,-10);
-		//createSpeedRectangle(5,30,2,3,1,1,10);
+		buildBlocks20(greenBlocks20);
 	}
 	
 	private void buildSpeedBlockMap(int level) {
@@ -242,22 +205,84 @@ public class Matrix {
 				buildRoller();
 				break;
 			case 3:
-				buildSpots();
+				buildSpine();
 				break;
 			case 4:
+				buildSpots();//buildCenteredBlobs();//buildCheckers();
+				break;
+			case 5:
 				buildConcave();
+				break;
+			case 6:
+				buildSpots();
 				break;
 		}
 	}
 	
-	private void buildGreenBlocks20() {
+	private void buildBlocks20(List<Point> greenBlocks20) {
 		for (int i=0; i<greenBlocks20.size(); i++) {
+			/*
 			Point block = greenBlocks20.get(i);
-			if (block.x == 0) block.x = 1;
-			if (block.y < 3) block.y = 3;
-			createSpeedRectangle(block.x-1,block.y-3,3,7,2.5f,2.5f,10);
+			createSpeedRectangle(0,0,1,3,4,4,8);
+			createSpeedRectangle(this.width-3, -1,2,2,0,0,7);
+			*/
+			Point block = greenBlocks20.get(i);
+			
+			if (block.x >= 0 && block.x < this.width && block.y >= 0 && block.y < this.heightFull) {
+				if (block.x >= 1) { // left side death blocks
+					levelArray[block.y-2][block.x-1].type = -1;
+					levelArray[block.y-1][block.x-1].type = 0;
+					levelArray[block.y][block.x-1].type = 0;
+					levelArray[block.y+1][block.x-1].type = 0;
+					levelArray[block.y-4][block.x-1].type = 0;
+				}
+				if (block.x <= this.width-2) { // right side death blocks
+					levelArray[block.y-2][block.x+1].type = -1;
+					levelArray[block.y-1][block.x+1].type = 0;
+					levelArray[block.y][block.x+1].type = 0;
+					levelArray[block.y+1][block.x+1].type = 0;
+					levelArray[block.y-4][block.x+1].type = 0;
+				}
+				
+				if (block.y >= 4) { // top death blocks
+					levelArray[block.y-4][block.x].type = 0;
+					levelArray[block.y-3][block.x].type = 0;
+					levelArray[block.y-2][block.x].type = -1; // make blank spots above coin
+					levelArray[block.y-1][block.x].type = -1;
+				}
+				if (block.y <= this.heightFull-4) { // make blank spots below coin
+					levelArray[block.y+1][block.x].type = -1;
+					levelArray[block.y+2][block.x].type = -1;
+					levelArray[block.y+3][block.x].type = -1;
+				}
+			}
 		}
 	}
+	
+	
+	// high density, slow.  high density => low movement choice, have bigger patches. patch speed is harsh.
+	
+	// less dense, big patches, tough color
+	
+	// less dense, fast, long patches
+		// Concave
+		// Spine
+		// Lines
+	
+	// less dense, slow, tough patches // small or big
+	
+	
+	/* AlternatingRectangles
+	 * Concave - G
+	 * Spine - G
+	 * Spots - G
+	 * Roller
+	 * Checkers - G
+	 * Blobs
+	 * CenteredBlobs
+	 * Fader
+	 * Lines - G
+	 */
 	
 	private void buildAlternatingRectangles() {
 		createSpeedRectangle(1,10,2,5,2,2,4);
@@ -306,6 +331,73 @@ public class Matrix {
 		createSpeedRectangle(0,30,this.width,4,7,5,-10);
 		createSpeedRectangle(0,45,this.width,4,7,5,10);
 		//createSpeedRectangle(0,,this.width,6,5,5,-10);
+	}
+	
+	private void buildCheckers() {
+		createSpeedRectangle(0,10,this.width,this.heightFull,0,0,-2);
+		for (int i=10; i<70; i+=8) {
+			//createSpeedRectangle(0,i,4,4,0,0,1);
+			//createSpeedRectangle(4,i+4,4,4,0,0,1);
+			
+			createSpeedRectangle(0,i,4,4,0,0,5);
+			createSpeedRectangle(4,i+4,4,4,0,0,5);
+			
+			createSpeedRectangle(1,i+1,2,2,0,0,3);
+			createSpeedRectangle(5,i+5,2,2,0,0,3);
+		}
+	}
+	
+	private void buildBlobs() {
+		createSpeedRectangle(0,0,this.width,this.heightFull,0,0,2);
+		
+		createSpeedRectangle(6,5,2,3,.4f,.5f,-3);
+		createSpeedRectangle(6,15,2,3,.25f,.25f,-2);
+		createSpeedRectangle(1,20,2,2,1,.5f,-3);
+		createSpeedRectangle(6,27,1,2,3,2,6);
+		createSpeedRectangle(3,30,1,2,.5f,.3f,2);
+		createSpeedRectangle(4,33,1,1,.75f,.5f,-2);
+		createSpeedRectangle(7,37,2,6,1,1,-3);
+		createSpeedRectangle(0,45,1,6,2,1.5f,-5);
+		createSpeedRectangle(7,45,1,6,2,1.5f,-5);
+		createSpeedRectangle(1,50,1,8,.5f,.5f,-3);
+		createSpeedRectangle(7,57,1,2,.3f,.5f,2);
+		// FIX 20 appearing too early
+	}
+	
+	private void buildCenteredBlobs() {
+		createSpeedRectangle(0,0,this.width,this.heightFull,0,0,3);
+		
+		createSpeedRectangle(3,10,2,2,.75f,.75f,-4);
+		createSpeedRectangle(2,20,3,3,1,1,-4);
+		createSpeedRectangle(3,30,2,2,.75f,.75f,-5);
+		createSpeedRectangle(3,40,2,2,0,0,-5);
+		createSpeedRectangle(3,50,2,2,1,1,-5);
+		createSpeedRectangle(3,60,2,2,0,0,-5);
+	}
+	
+	private void buildFader() {
+		//createSpeedRectangle(0,0,this.width,this.heightFull,0,0,3);
+		
+		createSpeedRectangle(6,12,1,2,.75f,.5f,3);
+		createSpeedRectangle(1,15,1,4,1.5f,.75f,-3);
+		createSpeedRectangle(4,17,1,1,1.5f,1.5f,5);
+		createSpeedRectangle(7,18,1,3,2.5f,2,-5);
+		createSpeedRectangle(1,22,1,4,2,1,7);
+		createSpeedRectangle(7,34,1,2,2,.5f,2);
+		createSpeedRectangle(2,38,2,2,1.5f,.75f,3f);
+		createSpeedRectangle(2,42,2,5,1.5f,2,-4);
+		createSpeedRectangle(5,50,2,1,.8f,.5f,3.5f);
+		createSpeedRectangle(0,53,1,2,3,3,-8);
+		
+		createSpeedRectangle(6,62,2,2,1,.5f,-3);
+		createSpeedRectangle(0,64,1,2,.75f,.5f,3);
+	}
+	
+	private void buildLines() {
+		createSpeedRectangle(0,10,1,this.heightFull,0,0,2);
+		createSpeedRectangle(2,10,1,this.heightFull,0,0,2);
+		createSpeedRectangle(4,10,1,this.heightFull,0,0,2);
+		createSpeedRectangle(6,10,1,this.heightFull,0,0,2);
 	}
 	
 	// return whether placing a block here would still allow player to be unblocked
@@ -450,19 +542,19 @@ public class Matrix {
 	
 	// modifies the speed property of certain coins to create areas shaded red or green
 	private void createSpeedRectangle(int coreX, int coreY, int coreWidth, int coreHeight, float horDecay, float vertDecay, float magnitude) {
-		if (coreX < 0 || coreX >= this.width) throw new IllegalArgumentException("coreX out of range");
-		else if (coreY < 0 || coreY >= this.heightFull) throw new IllegalArgumentException("coreY out of range");
-		else if (coreWidth <= 0) throw new IllegalArgumentException("coreWidth must be > 0");
-		else if (coreHeight <= 0) throw new IllegalArgumentException("coreHeight must be > 0");
-		else if (horDecay < 0) throw new IllegalArgumentException("horDecay must be >= 0");
+		if (horDecay < 0) throw new IllegalArgumentException("horDecay must be >= 0");
 		else if (vertDecay < 0) throw new IllegalArgumentException("vertDecay must be >= 0");
 		else if (magnitude < -10 || magnitude > 10) throw new IllegalArgumentException("magnitude must be between -10 and 10");
 		
 		// build core of blocks with speed of magnitude
 		for(int col=coreX; col<coreX+coreWidth; col++) {
-			for(int row=coreY; row<coreY+coreHeight; row++) {
-				Coin c = levelArray[row][col];
-				c.setSpeed(c.getSpeed() + magnitude);
+			if (col >= 0 && col < this.width) {
+				for(int row=coreY; row<coreY+coreHeight; row++) {
+					if (row >= 0 && row < this.heightFull) {
+						Coin c = levelArray[row][col];
+						c.setSpeed(c.getSpeed() + magnitude);
+					}
+				}
 			}
 		}
 		
@@ -604,13 +696,13 @@ public class Matrix {
 		int customOpportunities = totalOpportunities/adjustedLevel;
 		
 		Random rand = new Random();
-		int n = rand.nextInt(customOpportunities);
+		int n = rand.nextInt(customOpportunities/2);
 		return n == 0;
 	}
 	
 	public void updateMovement(float deltaTime) {
 		if (getLevel() > lastKnownLevel) {
-			vy = levels[getLevel()][0];
+			vy = levels.get(getLevel()).velocity;
 			lastKnownLevel = getLevel();
 			Log.d("MyApp", "NEXT LEVEL!");
 		}
