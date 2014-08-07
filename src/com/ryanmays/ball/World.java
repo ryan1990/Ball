@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.ryanmays.ball.GameScreen.State;
 
+import android.graphics.Color;
 import android.util.Log;
 
 /**
@@ -38,6 +39,7 @@ public class World {
     public Matrix matrix;
     public int score;
     public int maxScore;
+    private float barColor;
     
     public long beginFlashTime;
     
@@ -48,15 +50,15 @@ public class World {
     //CollisionListener listener;
     
     public World(/*CollisionListener listener*/) {
-    	Log.d("MyApp","ball before");
     	this.ball = new Ball();
     	this.man = new Man();
     	this.matrix = new Matrix(8, 80, 11, 40);
-    	this.score = 30;
-    	this.maxScore = 0;
-    	this.beginFlashTime = 0;
-    	Log.d("MyApp","ball created");
+    	this.score = 0;
+    	this.maxScore = 40;
     	
+    	this.beginFlashTime = 0;
+    	
+    	updateBarColor(this.score, this.maxScore);
     	this.matrix.buildNextLevel();
         //generateBlocks();
         //this.listener = listener;
@@ -112,7 +114,7 @@ public class World {
         
         
         collideManCoins();
-        collideTopCoins();
+        //collideTopCoins();
     }
     
     private boolean collideRects(float x, float y, float width, float height,
@@ -124,7 +126,7 @@ public class World {
             return true;
         return false;
     }             
-    
+    /*
     private void collideTopCoins() {
     	//for(int row=0; row<1; row++) {
     	for(int col=0; col<matrix.width; col++) {
@@ -132,12 +134,13 @@ public class World {
 			//Log.d("MyApp", "coin.y="+coin.y+", matrix.y="+matrix.y);
 			//Log.d("MyApp", "TOPROW:"+matrix.getTopRow());
 			if (coin.y - matrix.y <= 0) {
-				Log.d("MyApp", "COLLIDE"+" TOPROW="+matrix.getTopRow());
+				//Log.d("MyApp", "COLLIDE"+" TOPROW="+matrix.getTopRow());
 				//score = 0;
 			}
     	}
 		//}
     }
+    */
     
     private void collideManCoins() {
     	int count = 0;
@@ -155,26 +158,58 @@ public class World {
     					}
     				}
     				
-    				// handle collisions with special blocks
-    				if (coin.type == 1) score++;
-    				else if (coin.type == 2) score += 2;
-    				else if (coin.type == 3) score += 3;
-    				else if (coin.type == 4) score += 20;
-    				else if (coin.type == 0) {
-    					score -= 10;
-    					flash();
-    					
-    					if (score < 0 || score < maxScore - 40) {
-    						gameOver = true;
-    					}
+    				if (coin.type != -1) {
+	    				// handle collisions with special blocks
+	    				if (coin.type == 1) score++;
+	    				else if (coin.type == 2) score += 2;
+	    				else if (coin.type == 3) score += 3;
+	    				else if (coin.type == 4) score += 20;
+	    				else if (coin.type == 0) {
+	    					score -= 10;
+	    					flash();
+	    					
+	    					if (score < 0 || score < maxScore - 40) {
+	    						gameOver = true;
+	    					}
+	    				}
+	    				
+	    				if (score > maxScore) maxScore = score;
+	    				coin.type = -1;
+	    				updateBarColor(this.score, this.maxScore);
     				}
-    				
-    				if (score > maxScore) maxScore = score;
-    				coin.type = -1;
-    			}
 				count++;
+    			}
 	    	}
 		}
+    }
+    
+ // return top bar color in a range of green, yellow, or red based on difference of score and maxScore
+    public float getBarColor() {
+    	return this.barColor;
+    }
+    
+    private void updateBarColor(int score, int maxScore) {
+    	float red = 0;
+    	float green = 0;
+    	float blue = 0;
+    	
+    	int diff = maxScore - score;
+    	
+    	int adjustedDiff = diff - 20; // can range from -20 to 20.  -20 will be green, 0 will be yellow, 20 will be red.
+    	
+    	float colorDiff = adjustedDiff * (255.0f/20); // can range from -255 to 255
+    	
+    	if (colorDiff <= 0) {
+    		green = 255;
+    		red = 255 - Math.abs(colorDiff);
+    	} else {
+    		green = 255 - Math.abs(colorDiff);
+    		red = 255;
+    	}
+    	Log.d("MyApp", "adjustedDiff="+adjustedDiff);
+    	Log.d("MyApp", "colorDiff="+colorDiff);
+    	Log.d("MyApp","COLOR r="+red+", g="+green+"b="+blue);
+    	this.barColor = new Color().rgb((int)red, (int)green, (int)blue);
     }
     
     private float adjustedVY(float vy, float coinSpeed) {

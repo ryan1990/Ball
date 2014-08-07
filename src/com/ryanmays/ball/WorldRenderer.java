@@ -42,7 +42,6 @@ public class WorldRenderer {
     Bitmap coinGoldImage;
     Bitmap coinSilverImage;
     Bitmap coinBronzeImage;
-    Bitmap topBarImage;
     Bitmap paddleImage;
     Bitmap blocksImage;
     Bitmap purpleBackImage;
@@ -59,10 +58,9 @@ public class WorldRenderer {
         this.coinGoldImage = game.loadBitmap("coingold.png");
         this.coinSilverImage = game.loadBitmap("coinnewsilver2.png");
         this.coinBronzeImage = game.loadBitmap("coinbronze.png");
-        this.topBarImage = game.loadBitmap("topBar.png");
         this.paddleImage = game.loadBitmap("paddle.png");
         this.blocksImage = game.loadBitmap("blocks.png");
-        this.purpleBackImage = game.loadBitmap("purpleback.png");        
+        this.purpleBackImage = game.loadBitmap("purpleback.png");
         
         Log.d("MyApp","marked done");
     }
@@ -115,7 +113,7 @@ public class WorldRenderer {
 		// draw man
     	game.drawBitmap(manImage, (int)world.man.x, (int)world.man.y);
     	// draw top bar
-    	game.drawRectangle(0, 0, (int)world.MAX_X, (int)world.MIN_Y, Color.BLUE);
+    	game.drawRectangle(0, 0, (int)world.MAX_X, (int)world.MIN_Y, (int)world.getBarColor());
     	
         
         //game.drawBitmap(paddleImage, (int)world.paddle.x, (int)world.paddle.y);
@@ -125,5 +123,5 @@ public class WorldRenderer {
                             //0, (int)(block.type * Block.HEIGHT),
                             //(int)Block.WIDTH, (int)Block.HEIGHT);
         //}
-    }       
+    }
 }

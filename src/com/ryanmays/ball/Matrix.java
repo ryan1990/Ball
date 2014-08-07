@@ -50,84 +50,68 @@ public class Matrix {
 		}
 	}
 	
+	// high density, slow.  high density => low movement choice, have bigger patches. patch speed is harsh.
+	
+		// less dense, big patches, tough color
+		
+		// less dense, fast, long patches
+			// Concave
+			// Spine
+			// Lines
+		
+		// less dense, slow, tough patches // small or big
+			// Spots
+			// Checkers
+		
+		
+		/* Blank
+		 * 
+		 * AlternatingRectangles
+		 * Concave - G 180, 1f
+		 * Spine - G
+		 * Spots - G 80, 1.5f
+		 * Roller
+		 * Checkers - G 80, 1.5f
+		 * Blobs
+		 * CenteredBlobs
+		 * Fader
+		 * Lines - G
+		 */
+	
 	// set up each level that will be stored in levels array
 	private void buildLevels() {
-		levels.add(new Level(4000,0));
-		levels.add(new Level(4000,0));
-		levels.add(new Level(4000,0));
-		levels.add(new Level(4000,0));
-		levels.add(new Level(80,1.5f));//60,2.5f centered blobs //100,1 blobs
+		// 80,1.5 blank
+		
+		// fast // spine
+		
+		// slow // checkers
+		
+		// fast // concave
+		
+		// 100,2.5 blank
+		
+		// slow spots, altern
+		
+		levels.add(new Level(80,1.5f));
+		levels.add(new Level(120,1));
+		levels.add(new Level(100,2f));
+		levels.add(new Level(180,1));
+		
+		/*
+		levels.add(new Level(23280,0));
+		levels.add(new Level(333120,0));
+		levels.add(new Level(333100,0));
+		levels.add(new Level(333222,0));
+		levels.add(new Level(332333,0));
+		*/
+		
+		levels.add(new Level(70,2));
+		levels.add(new Level(100,2.5f));
+		levels.add(new Level(50000,0));
+		levels.add(new Level(50000,0));
+		levels.add(new Level(50000,0));
+		levels.add(new Level(100,2.5f));//60,2.5f centered blobs //100,1 blobs
 		levels.add(new Level(110,1.5f));
-		/*
-		// 0
-		levels[0][0] = 4170;
-		levels[0][1] = 0;
-		// 1
-		levels[1][0] = 4110;
-		levels[1][1] = 0;
-		// 2
-		levels[2][0] = 4111;//110;//60;
-		levels[2][1] = 0;//1.5f;//2.5f;
-		// 3
-		levels[3][0] = 90;
-		levels[3][1] = 2;
-		// 4
-		levels[4][0] = 100;
-		levels[4][1] = 1.5f;
-		// 5
-		levels[5][0] = 130;
-		levels[5][1] = 1;
-		// 6
-		levels[6][0] = 110;
-		levels[6][1] = 3.5f;
-		// 7
-		levels[7][0] = 240;
-		levels[7][1] = 1.5f;
-		// 8
-		levels[8][0] = 130;
-		levels[8][1] = 3.5f;
-		// 9
-		levels[9][0] = 260;
-		levels[9][1] = 1.5f;
-		// 10
-		levels[10][0] = 160;
-		levels[10][1] = 3;
-		// 11
-		levels[11][0] = 280;
-		levels[11][1] = 1.5f;
-		// 12
-		levels[12][0] = 170;
-		levels[12][1] = 3;
-		/*
-		levels[0][0] = 90;
-		levels[0][1] = 3;
-		
-		levels[0][0] = 110;
-		levels[0][1] = 4; //good
-		
-		levels[4][0] = 150;
-		levels[4][1] = 1.5f;
-		/*
-		levels[5][0] = 50;
-		levels[5][1] = 3;
-		*/
-		
-		/*
-		int velocity = 80;
-		int averageBlocks = 0;
-		for(int i=0; i<levels.length/3; i++) {
-			for(int j=0; j<3; j++) {
-				levels[i*3+j][0] = velocity;
-				levels[i*3+j][1] = averageBlocks;
-				
-				velocity += 10;
-				averageBlocks = 7;
-			}
-			
-			//velocity += 100;
-			//averageBlocks = 2;
-		}
-		*/
 	}
 	
 	
@@ -201,20 +185,20 @@ public class Matrix {
 	
 	private void buildSpeedBlockMap(int level) {
 		switch (level) {
-			case 2:
-				buildRoller();
-				break;
-			case 3:
+			case 1:
 				buildSpine();
 				break;
+			case 2:
+				buildCheckers();
+				break;
+			case 3:
+				buildConcave();//buildCenteredBlobs();//buildCheckers();
+				break;
 			case 4:
-				buildSpots();//buildCenteredBlobs();//buildCheckers();
+				//buildConcave();
 				break;
 			case 5:
-				buildConcave();
-				break;
-			case 6:
-				buildSpots();
+				buildAlternatingRectangles(); //buildSpots();
 				break;
 		}
 	}
@@ -259,31 +243,6 @@ public class Matrix {
 		}
 	}
 	
-	
-	// high density, slow.  high density => low movement choice, have bigger patches. patch speed is harsh.
-	
-	// less dense, big patches, tough color
-	
-	// less dense, fast, long patches
-		// Concave
-		// Spine
-		// Lines
-	
-	// less dense, slow, tough patches // small or big
-	
-	
-	/* AlternatingRectangles
-	 * Concave - G
-	 * Spine - G
-	 * Spots - G
-	 * Roller
-	 * Checkers - G
-	 * Blobs
-	 * CenteredBlobs
-	 * Fader
-	 * Lines - G
-	 */
-	
 	private void buildAlternatingRectangles() {
 		createSpeedRectangle(1,10,2,5,2,2,4);
 		createSpeedRectangle(0,10+6,4,3,0,0,-2);
@@ -305,12 +264,18 @@ public class Matrix {
 	}
 	
 	private void buildConcave() {
-		createSpeedRectangle(0,10,1,this.heightFull-20,2,0,4);
-		createSpeedRectangle(7,10,1,this.heightFull-20,2,0,4);
+		createSpeedRectangle(0,10,1,this.heightFull-20,2,0,6);
+		createSpeedRectangle(7,10,1,this.heightFull-20,2,0,6);
 	}
 	
 	private void buildSpine() {
 		createSpeedRectangle(3,10,2,this.heightFull-20,0,0,3);
+		
+		createSpeedRectangle(0,10,this.width,4,0,0,10);
+		createSpeedRectangle(0,25,this.width,4,0,0,-10);
+		
+		createSpeedRectangle(0,35,this.width,2,0,0,-10);
+		createSpeedRectangle(0,45,this.width,2,0,0,10);
 	}
 	
 	private void buildSpots() {
@@ -696,7 +661,7 @@ public class Matrix {
 		int customOpportunities = totalOpportunities/adjustedLevel;
 		
 		Random rand = new Random();
-		int n = rand.nextInt(customOpportunities/2);
+		int n = rand.nextInt(customOpportunities);
 		return n == 0;
 	}
 	
