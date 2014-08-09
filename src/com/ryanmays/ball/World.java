@@ -194,6 +194,7 @@ public class World {
     	float blue = 0;
     	
     	int diff = maxScore - score;
+    	if (diff > 40) diff = 40;
     	
     	int adjustedDiff = diff - 20; // can range from -20 to 20.  -20 will be green, 0 will be yellow, 20 will be red.
     	

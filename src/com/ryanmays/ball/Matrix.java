@@ -94,8 +94,8 @@ public class Matrix {
 		
 		levels.add(new Level(80,1.5f));
 		levels.add(new Level(120,1));
-		levels.add(new Level(100,2f));
-		levels.add(new Level(180,1));
+		levels.add(new Level(70,2f));
+		levels.add(new Level(190,1));
 		
 		/*
 		levels.add(new Level(23280,0));
@@ -105,7 +105,7 @@ public class Matrix {
 		levels.add(new Level(332333,0));
 		*/
 		
-		levels.add(new Level(70,2));
+		levels.add(new Level(70,2.5f));
 		levels.add(new Level(100,2.5f));
 		levels.add(new Level(50000,0));
 		levels.add(new Level(50000,0));
@@ -137,7 +137,7 @@ public class Matrix {
 		float averagePerRow = levels.get(currentLevel).density;
 		Random rand = new Random();
 		
-		for(int row=5; row<heightFull-windowHeight; row++) {
+		for(int row=this.windowHeight; row<heightFull-windowHeight; row++) {
 			//boolean rowIsEmpty = true; // used to ensure only one coin is placed on each row
 			
 			//if (maxPerRow > 3) maxPerRow = 3;
@@ -269,13 +269,13 @@ public class Matrix {
 	}
 	
 	private void buildSpine() {
-		createSpeedRectangle(3,10,2,this.heightFull-20,0,0,3);
+		createSpeedRectangle(3,this.windowHeight,2,this.heightFull-20,0,0,3);
 		
-		createSpeedRectangle(0,10,this.width,4,0,0,10);
-		createSpeedRectangle(0,25,this.width,4,0,0,-10);
+		createSpeedRectangle(0,this.windowHeight+10,this.width,4,0,0,10);
+		createSpeedRectangle(0,this.windowHeight+25,this.width,4,0,0,-10);
 		
-		createSpeedRectangle(0,35,this.width,2,0,0,-10);
-		createSpeedRectangle(0,45,this.width,2,0,0,10);
+		createSpeedRectangle(0,this.windowHeight+35,this.width,2,0,0,-10);
+		createSpeedRectangle(0,this.windowHeight+45,this.width,2,0,0,10);
 	}
 	
 	private void buildSpots() {
